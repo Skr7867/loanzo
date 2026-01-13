@@ -94,7 +94,7 @@ class EmiCalculatorScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 2),
 
           // Loan Amount Slider
           Obx(
@@ -114,7 +114,7 @@ class EmiCalculatorScreen extends StatelessWidget {
             ),
           ),
 
-          const Divider(height: 32),
+          const Divider(height: 2),
 
           // Interest Rate Slider
           Obx(
@@ -134,7 +134,7 @@ class EmiCalculatorScreen extends StatelessWidget {
             ),
           ),
 
-          const Divider(height: 32),
+          const Divider(height: 2),
 
           // Tenure Slider
           Obx(
@@ -156,7 +156,7 @@ class EmiCalculatorScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 2),
 
           // Year/Month Toggle Buttons
           Obx(

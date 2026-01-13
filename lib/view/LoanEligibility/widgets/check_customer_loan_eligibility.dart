@@ -538,6 +538,7 @@ class CheckEligibilityScreen extends StatelessWidget {
     ValueChanged<String>? onChanged,
   }) {
     return TextField(
+      keyboardType: TextInputType.number,
       controller: controller,
       onChanged: onChanged,
       decoration: InputDecoration(

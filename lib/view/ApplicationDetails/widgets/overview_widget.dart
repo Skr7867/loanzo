@@ -2,8 +2,14 @@ import 'package:dsa/res/color/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../models/ApplicationLoanDetails/application_loan_details_model.dart';
 import '../../../res/enum/enum.dart';
+import '../../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
 import '../../../viewModels/controllers/Theme/theme_controller.dart';
+import 'document_widgets.dart';
+import 'existing_loan_widgets.dart';
+import 'financial_tab_widget.dart';
+import 'payment_history_widgets.dart';
 
 class LoanTabsSection extends StatefulWidget {
   const LoanTabsSection({super.key});
@@ -14,6 +20,7 @@ class LoanTabsSection extends StatefulWidget {
 
 class _LoanTabsSectionState extends State<LoanTabsSection> {
   LoanTab selectedTab = LoanTab.overview;
+  final controller = Get.find<ApplicationDetailsController>();
 
   @override
   Widget build(BuildContext context) {
@@ -128,277 +135,187 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
         return _contentBox();
 
       case LoanTab.financials:
-        return _financialBox();
+        return FinancialTabScreen();
 
       case LoanTab.paymentHistory:
-        return _contentBox();
+        return PaymentHistoryWidget();
 
       case LoanTab.existingLoans:
-        return _contentBox();
+        return ExistingLoanWidgets();
 
       case LoanTab.documents:
-        return _contentBox();
+        return DocumentsWidgets();
     }
-  }
-
-  Widget _financialBox() {
-    return Column(children: [Text('Financials')]);
   }
 
   /// 🔹 Placeholder Content Box
   Widget _contentBox() {
+    final app = controller.application!;
+    final dti = app.dtiCalculation;
+
     return Column(
       children: [
+        /// 🔹 LOAN CALCULATION
         Container(
           margin: const EdgeInsets.all(16),
-          width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.grey.shade300),
           ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// 🔹 HEADER
-                Row(
-                  children: const [
-                    Icon(Icons.show_chart, size: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// HEADER
+              const Row(
+                children: [
+                  Icon(Icons.show_chart, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Loan Calculation Analysis',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              /// INFO NOTE
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF8E1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFFFE082)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.orange, size: 18),
                     SizedBox(width: 8),
-                    Text(
-                      'Loan Calculation Analysis',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Text(
+                        'Calculations based on Stage 1 data.',
+                        style: TextStyle(fontSize: 12),
                       ),
                     ),
                   ],
                 ),
+              ),
 
-                const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-                /// 🔹 INFO NOTE
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF8E1),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFFFFE082)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Icon(Icons.info_outline, color: Colors.orange, size: 18),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Calculations based on Stage 1 data, assuming '
-                          '10% interest for 12 months tenure.',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              /// METRICS
+              _metricCard(
+                title: 'Max Eligible Loan Amount',
+                value: '₹${dti.maxEligibleLoanAmount}',
+                valueColor: Colors.blue,
+                icon: Icons.currency_rupee,
+                iconBg: const Color(0xFFE3F2FD),
+              ),
 
-                const SizedBox(height: 16),
+              _metricCard(
+                title: 'Available EMI Capacity',
+                value: '₹${dti.availableEMICapacity}',
+                valueColor: Colors.green,
+                icon: Icons.trending_up,
+                iconBg: const Color(0xFFE8F5E9),
+              ),
 
-                /// 🔹 METRICS
-                _metricCard(
-                  title: 'Max Eligible Loan Amount',
-                  value: '₹4,28,830',
-                  valueColor: Colors.blue,
-                  icon: Icons.currency_rupee,
-                  iconBg: const Color(0xFFE3F2FD),
-                ),
+              _metricCard(
+                title: 'Current EMI Commitments',
+                value: '₹${dti.currentEMICommitments}',
+                valueColor: Colors.red,
+                icon: Icons.remove_circle_outline,
+                iconBg: const Color(0xFFFFEBEE),
+              ),
 
-                _metricCard(
-                  title: 'Available EMI Capacity',
-                  value: '₹37,701',
-                  valueColor: Colors.green,
-                  icon: Icons.trending_up,
-                  iconBg: const Color(0xFFE8F5E9),
-                ),
-
-                _metricCard(
-                  title: 'Current EMI Commitments',
-                  value: '₹799',
-                  valueColor: Colors.red,
-                  icon: Icons.remove_circle_outline,
-                  iconBg: const Color(0xFFFFEBEE),
-                ),
-
-                _metricCard(
-                  title: 'Available for EMI',
-                  value: '₹38,500',
-                  valueColor: Colors.deepPurple,
-                  icon: Icons.calendar_month,
-                  iconBg: const Color(0xFFF3E5F5),
-                ),
-              ],
-            ),
+              _metricCard(
+                title: 'Available for EMI',
+                value: '₹${dti.availableForEMI}',
+                valueColor: Colors.deepPurple,
+                icon: Icons.calendar_month,
+                iconBg: const Color(0xFFF3E5F5),
+              ),
+            ],
           ),
         ),
-        _customerInformationCard(),
-        loanRequestAndTimelineCard(),
+
+        /// 🔹 CUSTOMER INFO
+        _customerInformationCard(app),
+
+        /// 🔹 LOAN REQUEST + TIMELINE
+        loanRequestAndTimelineCard(app),
       ],
     );
   }
 
-  Widget loanRequestAndTimelineCard() {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// 🔹 LOAN REQUEST HEADER
-          Row(
-            children: const [
-              Icon(Icons.currency_rupee, size: 18),
-              SizedBox(width: 6),
-              Text(
-                'Loan Request',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-            ],
+  Widget loanRequestAndTimelineCard(LoanApplicationData app) {
+    final status = app.applicationStatus;
+
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade300),
           ),
-
-          const SizedBox(height: 12),
-
-          /// 🔹 REQUESTED AMOUNT
-          Center(
-            child: Column(
-              children: const [
-                Text(
-                  'Requested Amount',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '₹9,99,999',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.blue,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 🔹 TENURE
-          _loanRow(
-            icon: Icons.calendar_today_outlined,
-            label: 'Tenure',
-            value: '12 months',
-          ),
-
-          const SizedBox(height: 8),
-
-          /// 🔹 EMI
-          _loanRow(
-            icon: Icons.receipt_long_outlined,
-            label: 'Estimated EMI',
-            value: '₹87,916/month',
-            valueColor: Colors.green,
-            subText: '@15% interest',
-          ),
-
-          const SizedBox(height: 8),
-
-          /// 🔹 DTI
-          _loanRow(
-            icon: Icons.percent,
-            label: 'Debt to Income Ratio',
-            value: '1.14%',
-            valueColor: Colors.blue,
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 🔹 TOTALS
-          Row(
+          child: Column(
             children: [
-              Expanded(
-                child: _amountPill(
-                  title: 'Total Interest',
-                  value: '₹54,993',
-                  color: Colors.blue,
-                ),
+              _loanRow(
+                icon: Icons.currency_rupee,
+                label: 'Requested Amount',
+                value: '₹${app.loanAmount}',
+                valueColor: Colors.blue,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _amountPill(
-                  title: 'Total Payment',
-                  value: '₹10,54,992',
-                  color: Colors.green,
-                ),
+
+              _loanRow(
+                icon: Icons.calendar_today,
+                label: 'Tenure',
+                value: '${app.loanTenureMonths} months',
               ),
-            ],
-          ),
 
-          const SizedBox(height: 20),
-
-          /// 🔹 APPLICATION TIMELINE
-          Row(
-            children: const [
-              Icon(Icons.schedule, size: 18),
-              SizedBox(width: 6),
-              Text(
-                'Application Timeline',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              _loanRow(
+                icon: Icons.percent,
+                label: 'DTI Ratio',
+                value: '${app.dtiCalculation.debtToIncomeRatio}%',
+                valueColor: Colors.green,
               ),
             ],
           ),
+        ),
 
-          const SizedBox(height: 12),
-
-          _timelineItem(
-            title: 'Stage 1: Basic Details',
-            status: 'Completed',
-            date: '12 Jan 2026',
-            isCompleted: true,
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade300),
           ),
-
-          _timelineItem(
-            title: 'Stage 2: Additional Details',
-            status: 'In Progress',
-          ),
-
-          _timelineItem(title: 'Stage 3: Submitted', status: 'In Progress'),
-
-          const SizedBox(height: 16),
-
-          /// 🔹 STATUS ROW
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
-              _statusBlock(
-                title: 'Current Status',
-                value: 'Stage1_BasicDetails',
-                color: Colors.blue,
+              _timelineItem(
+                title: 'Stage 1',
+                status: 'Completed',
+                date: status.stage1CompletedAt
+                    .toLocal()
+                    .toString()
+                    .split(' ')
+                    .first,
+                isCompleted: true,
               ),
-              _statusBlock(
-                title: 'Final Decision',
-                value: 'Pending',
-                color: Colors.orange,
+              _timelineItem(
+                title: 'Current Stage',
+                status: status.currentStage,
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -438,35 +355,6 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _amountPill({
-    required String title,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.4)),
-      ),
-      child: Column(
-        children: [
-          Text(title, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: color,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -518,31 +406,10 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
     );
   }
 
-  Widget _statusBlock({
-    required String title,
-    required String value,
-    required Color color,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _customerInformationCard(LoanApplicationData app) {
+    final user = app.userId;
 
-  Widget _customerInformationCard() {
     return Container(
-      width: double.infinity,
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -553,9 +420,8 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// 🔹 HEADER
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.person_outline, size: 20),
               SizedBox(width: 8),
               Text(
@@ -567,15 +433,15 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 USER HEADER
+          /// USER HEADER
           Row(
             children: [
               CircleAvatar(
                 radius: 22,
                 backgroundColor: Colors.blue,
-                child: const Text(
-                  'S',
-                  style: TextStyle(
+                child: Text(
+                  user.name.isNotEmpty ? user.name[0] : '-',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -585,13 +451,15 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'SATYAM KUMAR',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    user.name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  SizedBox(height: 2),
-                  Text(
+                  const Text(
                     'Applicant',
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
@@ -602,14 +470,13 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 INFO GRID
           Row(
             children: [
               Expanded(
                 child: _infoTile(
                   icon: Icons.work_outline,
                   title: 'Occupation',
-                  value: 'Salaried',
+                  value: app.occupation,
                 ),
               ),
               const SizedBox(width: 12),
@@ -617,7 +484,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                 child: _infoTile(
                   icon: Icons.currency_rupee,
                   title: 'Monthly Income',
-                  value: '₹70,000',
+                  value: '₹${app.monthlyIncome}',
                 ),
               ),
             ],
@@ -631,15 +498,15 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                 child: _infoTile(
                   icon: Icons.percent,
                   title: 'Credit Utilization',
-                  value: '0%',
+                  value: '${app.creditUtilization}%',
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _infoTile(
                   icon: Icons.badge_outlined,
-                  title: 'PAN Number',
-                  value: 'INEPK3169K',
+                  title: 'PAN',
+                  value: app.cibilScore.personalInfo.pan,
                 ),
               ),
             ],
@@ -652,8 +519,8 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
               Expanded(
                 child: _infoTile(
                   icon: Icons.phone_outlined,
-                  title: 'Phone Number',
-                  value: '7505576025',
+                  title: 'Phone',
+                  value: user.phone.toString(),
                 ),
               ),
               const SizedBox(width: 12),
@@ -661,7 +528,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                 child: _infoTile(
                   icon: Icons.email_outlined,
                   title: 'Email',
-                  value: 'N/A',
+                  value: user.email ?? 'N/A',
                 ),
               ),
             ],

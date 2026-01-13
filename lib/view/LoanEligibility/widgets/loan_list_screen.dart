@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../data/response/status.dart';
 import '../../../models/LoanList/loan_list_model.dart';
 import '../../../res/color/app_colors.dart';
+import '../../../res/routes/routes_name.dart';
 import '../../../viewModels/controllers/LoanList/loan_list_controller.dart';
 import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
@@ -343,20 +344,20 @@ class LoanListScreen extends StatelessWidget {
 
   Widget _tableHeader(bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.withOpacity(0.08) : const Color(0xffF8FAFC),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: const [
-          _HeaderCell('SR.NO', 70),
-          _HeaderCell('LOAN AMOUNT', 140),
-          _HeaderCell('TENURE', 110),
-          _HeaderCell('VEHICLE DETAILS', 220),
-          _HeaderCell('MAX ELIGIBLE', 150),
-          _HeaderCell('STATUS', 180),
-          _HeaderCell('ACTION', 120),
+          _HeaderCell('SR.NO', 50),
+          _HeaderCell('LOAN AMOUNT', 100),
+          _HeaderCell('TENURE', 70),
+          _HeaderCell('VEHICLE DETAILS', 130),
+          _HeaderCell('MAX ELIGIBLE', 110),
+          _HeaderCell('STATUS', 130),
+          _HeaderCell('ACTION', 80),
         ],
       ),
     );
@@ -379,25 +380,25 @@ class LoanListScreen extends StatelessWidget {
         children: [
           _DataCell(
             '#${(index + 1).toString().padLeft(2, '0')}',
-            70,
+            50,
             color: Colors.grey[600],
           ),
           _DataCell(
             '₹${_formatAmount(item.loanAmount ?? 0)}',
-            140,
+            80,
             bold: true,
             color: const Color(0xff3B82F6),
           ),
-          _DataCell('${item.loanTenureMonths ?? 0} Months', 110),
+          _DataCell('${item.loanTenureMonths ?? 0} Months', 80),
           _vehicleCell(item, isDark),
           _DataCell(
             '₹${_formatAmount(item.dtiCalculation?.maxEligibleLoanAmount ?? 0)}',
-            150,
+            80,
             color: const Color(0xff10B981),
             bold: true,
           ),
           _statusChip(item.applicationStatus?.currentStage ?? '-', isDark),
-          _actionButton(isDark),
+          _actionButton(isDark, item),
         ],
       ),
     );
@@ -406,7 +407,7 @@ class LoanListScreen extends StatelessWidget {
   // ---------------- VEHICLE CELL WITH ICON ----------------
   Widget _vehicleCell(Data item, bool isDark) {
     return SizedBox(
-      width: 220,
+      width: 150,
       child: Row(
         children: [
           Container(
@@ -486,7 +487,7 @@ class _HeaderCell extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w700,
           color: Colors.grey[700],
-          letterSpacing: 0.5,
+          letterSpacing: 0.2,
           fontFamily: AppFonts.opensansRegular,
         ),
       ),
@@ -583,16 +584,18 @@ Widget _statusChip(String status, bool isDark) {
 }
 
 // ---------------- ACTION BUTTON ----------------
-Widget _actionButton(bool isDark) {
+Widget _actionButton(bool isDark, Data item) {
   return SizedBox(
     width: 100,
     height: 35,
     child: ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        Get.toNamed(RouteName.applicationDetailsScreen, arguments: item.sId);
+      },
       icon: const Icon(Icons.visibility, size: 16),
-      label: const Text(
+      label: Text(
         'View',
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           fontFamily: AppFonts.opensansRegular,

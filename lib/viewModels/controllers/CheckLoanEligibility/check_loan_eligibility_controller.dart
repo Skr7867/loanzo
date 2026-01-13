@@ -10,6 +10,23 @@ import '../../services/user_session_service.dart';
 import '../CibilScore/cibil_score_controller.dart';
 
 class CheckEligibilityController extends GetxController {
+  late final String userId;
+  @override
+  void onInit() {
+    super.onInit();
+
+    final args = Get.arguments;
+
+    if (args == null || args.toString().isEmpty) {
+      Get.snackbar('Error', 'User ID not received');
+      return;
+    }
+
+    userId = args.toString();
+
+    debugPrint('✅ CheckEligibilityController userId: $userId');
+  }
+
   /// Text Controllers
   final loanAmountController = TextEditingController();
   final tenureController = TextEditingController();
@@ -39,6 +56,10 @@ class CheckEligibilityController extends GetxController {
   final _session = UserSessionService();
 
   Future<void> submitCheckEligibility() async {
+    if (isSubmitting.value) return; // prevent double tap
+
+    isSubmitting.value = true; // ✅ START LOADING
+
     try {
       final token = _session.token;
       if (token == null) {
@@ -60,7 +81,6 @@ class CheckEligibilityController extends GetxController {
           ? tenureValue * 12
           : tenureValue;
 
-      /// 🔹 USE DIO FORM DATA (PREFIXED)
       final formData = dio.FormData();
 
       formData.fields.addAll([
@@ -104,8 +124,8 @@ class CheckEligibilityController extends GetxController {
         options: dio.Options(contentType: 'multipart/form-data'),
         onSendProgress: (sent, total) {
           if (total > 0) {
-            final progress = sent / total;
-            log('Overall upload progress: ${(progress * 100).toInt()}%');
+            final progress = (sent / total * 100).toInt();
+            log('📤 Upload progress: $progress%');
           }
         },
       );
@@ -115,12 +135,18 @@ class CheckEligibilityController extends GetxController {
         'Eligibility request submitted successfully',
         snackPosition: SnackPosition.TOP,
       );
-      Get.toNamed(RouteName.applicationDetailsScreen, arguments: clientUserId);
-      log('API RESPONSE: ${response.data}');
-    } catch (e) {
+
+      final applicationId = response.data?['data']?['loanRequestId'];
+      Get.toNamed(RouteName.applicationDetailsScreen, arguments: applicationId);
+      Get.delete<CheckEligibilityController>();
+
+      log('✅ API RESPONSE: ${response.data}');
+    } catch (e, st) {
+      log('❌ Submit eligibility error', error: e, stackTrace: st);
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
+      log('this is error when i submit and ${e.toString()}');
     } finally {
-      isSubmitting.value = false;
+      isSubmitting.value = false; // ✅ STOP LOADING
     }
   }
 

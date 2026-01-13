@@ -188,18 +188,22 @@ class DtiCalculation {
 
   factory DtiCalculation.fromJson(Map<String, dynamic> json) {
     return DtiCalculation(
-      monthlyIncome: json['monthlyIncome'] ?? 0,
-      personalExpensePercentage: json['personalExpensePercentage'] ?? 0,
-      availableForEMI: json['availableForEMI'] ?? 0,
-      currentEMICommitments: json['currentEMICommitments'] ?? 0,
+      monthlyIncome: (json['monthlyIncome'] as num?)?.toInt() ?? 0,
+      personalExpensePercentage:
+          (json['personalExpensePercentage'] as num?)?.toInt() ?? 0,
+      availableForEMI: (json['availableForEMI'] as num?)?.toInt() ?? 0,
+      currentEMICommitments:
+          (json['currentEMICommitments'] as num?)?.toInt() ?? 0,
       existingLoansBreakdown:
           (json['existingLoansBreakdown'] as List?)
               ?.map((e) => ExistingLoan.fromJson(e))
               .toList() ??
           [],
-      availableEMICapacity: json['availableEMICapacity'] ?? 0,
-      debtToIncomeRatio: (json['debtToIncomeRatio'] ?? 0).toDouble(),
-      maxEligibleLoanAmount: json['maxEligibleLoanAmount'] ?? 0,
+      availableEMICapacity:
+          (json['availableEMICapacity'] as num?)?.toInt() ?? 0,
+      debtToIncomeRatio: (json['debtToIncomeRatio'] as num?)?.toDouble() ?? 0.0,
+      maxEligibleLoanAmount:
+          (json['maxEligibleLoanAmount'] as num?)?.toInt() ?? 0,
       calculatedAt: DateTime.parse(
         json['calculatedAt'] ?? DateTime.now().toIso8601String(),
       ),

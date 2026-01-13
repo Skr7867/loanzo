@@ -108,6 +108,8 @@ class CustomerLoanOverviewScreen extends StatelessWidget {
 
   // ---------------- NEW APPLICATION BUTTON ----------------
   Widget _newApplicationButton() {
+    final LoanListController controller = Get.find<LoanListController>();
+    final userId = controller.userId;
     return Container(
       width: double.infinity,
       height: 50,
@@ -128,10 +130,13 @@ class CustomerLoanOverviewScreen extends StatelessWidget {
       ),
       child: ElevatedButton.icon(
         onPressed: () {
-          Get.toNamed(RouteName.checkCustomerLoanEligibility);
+          Get.toNamed(
+            RouteName.checkCustomerLoanEligibility,
+            arguments: userId,
+          );
         },
         icon: const Icon(Icons.add_circle_outline, size: 22),
-        label: const Text(
+        label: Text(
           "New Application",
           style: TextStyle(
             fontSize: 15,
