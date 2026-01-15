@@ -22,7 +22,7 @@ class LoanListController extends GetxController {
 
   /// PAGINATION
   final RxInt currentPage = 1.obs;
-  final RxInt itemsPerPage = 6.obs; // Show 6 items per page
+  final RxInt itemsPerPage = 6.obs;
   final RxInt totalItems = 0.obs;
 
   /// USER

@@ -18,4 +18,5 @@ class RouteName {
   static const String applicationDetailsScreen = '/ApplicationDetailsApiScreen';
   static const String stageTwoScreen = '/StageTwoScreen';
   static const String applicationPreviewScreen = '/ApplicationPrevieScreen';
+  static const String accountDetailsScreen = '/AccountDetailsScreen';
 }

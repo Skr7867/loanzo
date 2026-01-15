@@ -23,7 +23,7 @@ class LoanListScreen extends StatelessWidget {
 
   // Pagination variables
   final RxInt currentPage = 1.obs;
-  final RxInt itemsPerPage = 10.obs;
+  final RxInt itemsPerPage = 5.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +234,7 @@ class LoanListScreen extends StatelessWidget {
           items: [5, 10, 20, 50].map((int value) {
             return DropdownMenuItem<int>(
               value: value,
-              child: Text('$value / page'),
+              child: Text(' $value / page'),
             );
           }).toList(),
           onChanged: (int? newValue) {
