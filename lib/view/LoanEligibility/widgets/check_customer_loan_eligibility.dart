@@ -1,10 +1,7 @@
 import 'dart:io';
-
 import 'package:dsa/res/color/app_colors.dart';
-import 'package:dsa/res/component/round_button.dart';
 import 'package:dsa/res/custom_widgets/custome_appbar.dart';
 import 'package:dsa/res/fonts/app_fonts.dart';
-import 'package:dsa/res/routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../viewModels/controllers/CheckLoanEligibility/check_loan_eligibility_controller.dart';
@@ -29,7 +26,12 @@ class CheckEligibilityScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Container(
               width: 360,
-              margin: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: 100,
+              ),
               decoration: BoxDecoration(
                 color: isDark ? AppColors.blackColor : Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -173,14 +175,66 @@ class CheckEligibilityScreen extends StatelessWidget {
                           if (controller.isSalaried) ...[
                             const SizedBox(height: 16),
                             _uploadLabel('ITR Document'),
-                            _uploadBox(
-                              file: controller.itrFile,
-                              onTap: () =>
-                                  controller.pickFile(controller.itrFile),
-                            ),
+
+                            Obx(() {
+                              final itr = controller.itrFile.value;
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _uploadBox(
+                                    file: controller.itrFile,
+                                    onTap: () =>
+                                        controller.pickFile(controller.itrFile),
+                                  ),
+
+                                  if (itr != null) ...[
+                                    const SizedBox(height: 10),
+
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.green),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.insert_drive_file,
+                                            size: 16,
+                                            color: Colors.green,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              itr.path.split('/').last,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.green,
+                                                fontFamily:
+                                                    AppFonts.opensansRegular,
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: controller.removeItrFile,
+                                            child: const Icon(
+                                              Icons.close,
+                                              size: 16,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              );
+                            }),
 
                             const SizedBox(height: 12),
-                            _uploadLabel('Salary Slips (Min 3)'),
+                            _uploadLabel('Salary Slips (Min 3 & Max 6)'),
                             _uploadBoxMulti(
                               count: controller.salarySlipFiles.length,
                               onTap: controller.pickSalarySlipsWithProgress,
@@ -350,13 +404,14 @@ class CheckEligibilityScreen extends StatelessWidget {
                                     child: isLoading
                                         ? const SizedBox(
                                             height: 22,
-                                            width: 22,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2.5,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                    Colors.white,
-                                                  ),
+
+                                            child: Text(
+                                              'Eligibility is checking..',
+                                              style: TextStyle(
+                                                fontFamily:
+                                                    AppFonts.opensansRegular,
+                                                color: AppColors.greyColor,
+                                              ),
                                             ),
                                           )
                                         : Row(
@@ -388,15 +443,7 @@ class CheckEligibilityScreen extends StatelessWidget {
                             );
                           }),
                           const SizedBox(height: 8),
-                          RoundButton(
-                            height: 40,
-                            buttonColor: Colors.red,
-                            title: 'AppLication Details',
-                            onPress: () {
-                              Get.toNamed(RouteName.applicationDetailsScreen);
-                            },
-                          ),
-                          const SizedBox(height: 8),
+
                           const Text(
                             'Complete required fields and document uploads to proceed.',
                             style: TextStyle(fontSize: 11, color: Colors.grey),

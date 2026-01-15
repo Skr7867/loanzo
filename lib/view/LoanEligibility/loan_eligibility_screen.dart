@@ -22,7 +22,7 @@ class CustomerLoanOverviewScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -32,9 +32,8 @@ class CustomerLoanOverviewScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _statusCards(),
               const SizedBox(height: 24),
-
-              /// 🔹 Loan List uses SAME controller
               LoanListScreen(),
+              const SizedBox(height: 54),
             ],
           ),
         ),
@@ -197,8 +196,8 @@ class CustomerLoanOverviewScreen extends StatelessWidget {
                 trendUp: true,
               ),
               StatusCard(
-                title: "UNDER REVIEW",
-                count: "0",
+                title: "SUBMITTED",
+                count: submitted.toString(),
                 icon: Icons.access_time_rounded,
                 gradientColors: const [Color(0xffFB923C), Color(0xffF97316)],
                 trend: "No pending",
@@ -214,10 +213,10 @@ class CustomerLoanOverviewScreen extends StatelessWidget {
               ),
               StatusCard(
                 title: "ELIGIBLE",
-                count: submitted.toString(),
+                count: total.toString(),
                 icon: Icons.check_circle_rounded,
                 gradientColors: const [Color(0xff10B981), Color(0xff059669)],
-                trend: "${submitted} completed",
+                trend: "${total} eligible",
                 trendUp: true,
               ),
             ],

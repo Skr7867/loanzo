@@ -21,6 +21,10 @@ class LoanListScreen extends StatelessWidget {
     'Submitted',
   ];
 
+  // Pagination variables
+  final RxInt currentPage = 1.obs;
+  final RxInt itemsPerPage = 10.obs;
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
@@ -59,9 +63,11 @@ class LoanListScreen extends StatelessWidget {
               case Status.LOADING:
                 return _loadingState();
               case Status.ERROR:
-                return _errorState();
+                return _errorState(context);
               case Status.COMPLETED:
-                return _loanTable(isDark);
+                return Column(
+                  children: [_loanTable(isDark), _paginationControls(isDark)],
+                );
             }
           }),
         ],
@@ -72,7 +78,7 @@ class LoanListScreen extends StatelessWidget {
   // ---------------- LOADING STATE ----------------
   Widget _loadingState() {
     return Container(
-      padding: const EdgeInsets.all(60),
+      padding: const EdgeInsets.all(0),
       child: Column(
         children: [
           const CircularProgressIndicator(strokeWidth: 3),
@@ -91,7 +97,7 @@ class LoanListScreen extends StatelessWidget {
   }
 
   // ---------------- ERROR STATE ----------------
-  Widget _errorState() {
+  Widget _errorState(context) {
     return Container(
       padding: const EdgeInsets.all(40),
       child: Column(
@@ -106,12 +112,13 @@ class LoanListScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            controller.errorMessage.value,
+            // controller.errorMessage.value,
+            'Loan Application Not Found',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.red,
+            style: TextStyle(
               fontSize: 14,
               fontFamily: AppFonts.opensansRegular,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
         ],
@@ -140,7 +147,10 @@ class LoanListScreen extends StatelessWidget {
               ),
             ),
             child: TextField(
-              onChanged: controller.updateSearch,
+              onChanged: (value) {
+                controller.updateSearch(value);
+                currentPage.value = 1; // Reset to first page on search
+              },
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.search,
@@ -168,18 +178,72 @@ class LoanListScreen extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Filter Chips
-          Obx(() {
-            return Wrap(
-              spacing: 5,
-              runSpacing: 8,
-              children: filterOptions.map((filter) {
-                final isSelected = controller.selectedFilter.value == filter;
-                return _filterChip(filter, isSelected, isDark);
-              }).toList(),
-            );
-          }),
+          // Filter Chips and Items Per Page
+          Row(
+            children: [
+              Expanded(
+                child: Obx(() {
+                  return Wrap(
+                    spacing: 2,
+                    runSpacing: 6,
+                    children: filterOptions.map((filter) {
+                      final isSelected =
+                          controller.selectedFilter.value == filter;
+                      return _filterChip(filter, isSelected, isDark);
+                    }).toList(),
+                  );
+                }),
+              ),
+              const SizedBox(width: 16),
+              _itemsPerPageDropdown(isDark),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  // ---------------- ITEMS PER PAGE DROPDOWN ----------------
+  Widget _itemsPerPageDropdown(bool isDark) {
+    return Obx(
+      () => Container(
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.grey.withOpacity(0.1)
+              : Colors.grey.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isDark
+                ? Colors.grey.withOpacity(0.2)
+                : Colors.grey.withOpacity(0.15),
+          ),
+        ),
+        child: DropdownButton<int>(
+          value: itemsPerPage.value,
+          underline: const SizedBox(),
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: isDark ? Colors.grey[400] : Colors.grey[600],
+          ),
+          dropdownColor: isDark ? Colors.grey[850] : Colors.white,
+          style: TextStyle(
+            fontSize: 13,
+            fontFamily: AppFonts.opensansRegular,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+          items: [5, 10, 20, 50].map((int value) {
+            return DropdownMenuItem<int>(
+              value: value,
+              child: Text('$value / page'),
+            );
+          }).toList(),
+          onChanged: (int? newValue) {
+            if (newValue != null) {
+              itemsPerPage.value = newValue;
+              currentPage.value = 1; // Reset to first page
+            }
+          },
+        ),
       ),
     );
   }
@@ -196,7 +260,10 @@ class LoanListScreen extends StatelessWidget {
     }
 
     return InkWell(
-      onTap: () => controller.updateFilter(label),
+      onTap: () {
+        controller.updateFilter(label);
+        currentPage.value = 1; // Reset to first page on filter change
+      },
       borderRadius: BorderRadius.circular(20),
       child: AnimatedContainer(
         height: 30,
@@ -242,11 +309,24 @@ class LoanListScreen extends StatelessWidget {
 
   // ---------------- TABLE ----------------
   Widget _loanTable(bool isDark) {
-    final list = _filteredLoans();
+    final allLoans = _filteredLoans();
 
-    if (list.isEmpty) {
+    if (allLoans.isEmpty) {
       return _emptyState(isDark);
     }
+
+    // Calculate pagination
+    final totalItems = allLoans.length;
+    final totalPages = (totalItems / itemsPerPage.value).ceil();
+
+    // Ensure current page is valid
+    if (currentPage.value > totalPages) {
+      currentPage.value = totalPages;
+    }
+
+    final startIndex = (currentPage.value - 1) * itemsPerPage.value;
+    final endIndex = (startIndex + itemsPerPage.value).clamp(0, totalItems);
+    final paginatedList = allLoans.sublist(startIndex, endIndex);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -260,8 +340,12 @@ class LoanListScreen extends StatelessWidget {
                 children: [
                   _tableHeader(isDark),
                   const SizedBox(height: 8),
-                  ...list.asMap().entries.map(
-                    (entry) => _tableRow(entry.value, entry.key, isDark),
+                  ...paginatedList.asMap().entries.map(
+                    (entry) => _tableRow(
+                      entry.value,
+                      startIndex + entry.key, // Global index
+                      isDark,
+                    ),
                   ),
                   const SizedBox(height: 10),
                 ],
@@ -270,6 +354,204 @@ class LoanListScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  // ---------------- PAGINATION CONTROLS ----------------
+  Widget _paginationControls(bool isDark) {
+    final allLoans = _filteredLoans();
+    final totalItems = allLoans.length;
+    final totalPages = (totalItems / itemsPerPage.value).ceil();
+
+    if (totalItems == 0) return const SizedBox.shrink();
+
+    return Obx(
+      () => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: isDark
+                  ? Colors.grey.withOpacity(0.2)
+                  : Colors.grey.withOpacity(0.1),
+            ),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Showing info
+            // Text(
+            //   'Showing ${(currentPage.value - 1) * itemsPerPage.value + 1}-${((currentPage.value - 1) * itemsPerPage.value + itemsPerPage.value).clamp(0, totalItems)} of $totalItems',
+            //   style: TextStyle(
+            //     fontSize: 13,
+            //     color: isDark ? Colors.grey[400] : Colors.grey[600],
+            //     fontFamily: AppFonts.opensansRegular,
+            //   ),
+            // ),
+
+            // Pagination buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // First page
+                _paginationButton(
+                  icon: Icons.first_page,
+                  onPressed: currentPage.value > 1
+                      ? () => currentPage.value = 1
+                      : null,
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 4),
+
+                // Previous page
+                _paginationButton(
+                  icon: Icons.chevron_left,
+                  onPressed: currentPage.value > 1
+                      ? () => currentPage.value--
+                      : null,
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 12),
+
+                // Page numbers
+                ..._buildPageNumbers(totalPages, isDark),
+
+                const SizedBox(width: 12),
+
+                // Next page
+                _paginationButton(
+                  icon: Icons.chevron_right,
+                  onPressed: currentPage.value < totalPages
+                      ? () => currentPage.value++
+                      : null,
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 4),
+
+                // Last page
+                _paginationButton(
+                  icon: Icons.last_page,
+                  onPressed: currentPage.value < totalPages
+                      ? () => currentPage.value = totalPages
+                      : null,
+                  isDark: isDark,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ---------------- PAGINATION BUTTON ----------------
+  Widget _paginationButton({
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required bool isDark,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            color: onPressed == null
+                ? (isDark
+                      ? Colors.grey.withOpacity(0.1)
+                      : Colors.grey.withOpacity(0.05))
+                : (isDark
+                      ? Colors.grey.withOpacity(0.15)
+                      : Colors.grey.withOpacity(0.1)),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: isDark
+                  ? Colors.grey.withOpacity(0.2)
+                  : Colors.grey.withOpacity(0.15),
+            ),
+          ),
+          child: Icon(
+            icon,
+            size: 18,
+            color: onPressed == null
+                ? (isDark ? Colors.grey[700] : Colors.grey[400])
+                : (isDark ? Colors.grey[300] : Colors.grey[700]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------- BUILD PAGE NUMBERS ----------------
+  List<Widget> _buildPageNumbers(int totalPages, bool isDark) {
+    List<Widget> pageButtons = [];
+
+    // Show max 5 page numbers at a time
+    int startPage = (currentPage.value - 2).clamp(1, totalPages);
+    int endPage = (startPage + 4).clamp(1, totalPages);
+
+    // Adjust start if we're near the end
+    if (endPage == totalPages) {
+      startPage = (totalPages - 4).clamp(1, totalPages);
+    }
+
+    for (int i = startPage; i <= endPage; i++) {
+      pageButtons.add(Obx(() => _pageNumberButton(i, isDark)));
+      if (i < endPage) {
+        pageButtons.add(const SizedBox(width: 4));
+      }
+    }
+
+    return pageButtons;
+  }
+
+  // ---------------- PAGE NUMBER BUTTON ----------------
+  Widget _pageNumberButton(int pageNumber, bool isDark) {
+    final isSelected = currentPage.value == pageNumber;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => currentPage.value = pageNumber,
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xff3B82F6)
+                : (isDark
+                      ? Colors.grey.withOpacity(0.15)
+                      : Colors.grey.withOpacity(0.1)),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xff3B82F6)
+                  : (isDark
+                        ? Colors.grey.withOpacity(0.2)
+                        : Colors.grey.withOpacity(0.15)),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              pageNumber.toString(),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.grey[300] : Colors.grey[700]),
+                fontFamily: AppFonts.opensansRegular,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

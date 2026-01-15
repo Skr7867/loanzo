@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 
 import 'package:dsa/res/routes/routes_name.dart';
+import 'package:dsa/utils/utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -48,6 +49,7 @@ class CheckEligibilityController extends GetxController {
   final salarySlipProgress = <String, double>{}.obs;
   final isFormValidRx = false.obs;
   final businessProofFile = Rx<File?>(null);
+  final uploadProgress = 0.obs;
 
   /// Helpers
   bool get isSalaried => selectedOccupation.value == 'Salaried';
@@ -57,9 +59,8 @@ class CheckEligibilityController extends GetxController {
   final _session = UserSessionService();
 
   Future<void> submitCheckEligibility() async {
-    if (isSubmitting.value) return; // prevent double tap
-
-    isSubmitting.value = true; // ✅ START LOADING
+    if (isSubmitting.value) return;
+    isSubmitting.value = true;
 
     try {
       final token = _session.token;
@@ -144,16 +145,23 @@ class CheckEligibilityController extends GetxController {
       log('✅ API RESPONSE: ${response.data}');
     } catch (e, st) {
       log('❌ Submit eligibility error', error: e, stackTrace: st);
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
+      // Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
+      Utils.snackBar('Technical error please try again ', 'Failed');
       log('this is error when i submit and ${e.toString()}');
     } finally {
-      isSubmitting.value = false; // ✅ STOP LOADING
+      isSubmitting.value = false;
+      uploadProgress.value = 0;
     }
   }
 
   void removeSalarySlip(File file) {
     salarySlipFiles.remove(file);
     salarySlipProgress.remove(file.path);
+    validateForm();
+  }
+
+  void removeItrFile() {
+    itrFile.value = null;
     validateForm();
   }
 

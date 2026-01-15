@@ -17,7 +17,6 @@ class StageTwoApiController extends GetxController {
   RxBool isLoading = false.obs;
 
   /// ================= SAVE & PREVIEW =================
-  /// ================= SAVE & PREVIEW =================
   Future<void> submitStageTwo({required String loanRequestId}) async {
     final stageTwoController = Get.find<CheckEligibilityController>();
     final previewController = Get.put(ApplicationPreviewController());

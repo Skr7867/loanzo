@@ -3,6 +3,8 @@ import 'package:dsa/viewModels/controllers/Stage2Controller/stage_two_controller
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../models/ApplicationLoanDetails/application_loan_details_model.dart';
+import '../../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
 import '../../../viewModels/controllers/Stage2Controller/save_and_preview_controller.dart';
 
 class F16AndSummarySection extends StatelessWidget {
@@ -20,7 +22,11 @@ class F16AndSummarySection extends StatelessWidget {
     final StageTwoApiController apiController =
         Get.find<StageTwoApiController>();
 
-    // Responsive breakpoints
+    final ApplicationDetailsController appController =
+        Get.find<ApplicationDetailsController>();
+
+    final LoanApplicationData app = appController.application!;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
@@ -35,7 +41,7 @@ class F16AndSummarySection extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Basic Details Section
-        _buildBasicDetailsCard(isTablet),
+        _buildBasicDetailsCard(isTablet, app),
         const SizedBox(height: 20),
 
         // Quick Tips Section
@@ -430,7 +436,7 @@ class F16AndSummarySection extends StatelessWidget {
   }
 
   // ==================== Basic Details Card ====================
-  Widget _buildBasicDetailsCard(bool isTablet) {
+  Widget _buildBasicDetailsCard(bool isTablet, LoanApplicationData app) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -518,30 +524,34 @@ class F16AndSummarySection extends StatelessWidget {
               children: [
                 _buildDetailRow(
                   'Loan Amount',
-                  '₹2,00,000',
+                  '₹${app.loanAmount}',
                   Icons.currency_rupee,
                   const Color(0xFF06B6D4),
+                  app,
                 ),
                 _buildDivider(),
                 _buildDetailRow(
                   'Monthly Income',
-                  '₹30,000',
+                  '₹${app.monthlyIncome}',
                   Icons.account_balance_wallet_outlined,
                   const Color(0xFF10B981),
+                  app,
                 ),
                 _buildDivider(),
                 _buildDetailRow(
                   'Occupation',
-                  'Salaried',
+                  '${app.occupation}',
                   Icons.work_outline,
                   const Color(0xFF8B5CF6),
+                  app,
                 ),
                 _buildDivider(),
                 _buildDetailRow(
-                  'Documents to Explain',
-                  '0',
+                  'Bounces to explain',
+                  '${app.businessProof}',
                   Icons.description_outlined,
                   const Color(0xFFF59E0B),
+                  app,
                 ),
               ],
             ),
@@ -557,6 +567,7 @@ class F16AndSummarySection extends StatelessWidget {
     String value,
     IconData icon,
     Color color,
+    LoanApplicationData app,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),

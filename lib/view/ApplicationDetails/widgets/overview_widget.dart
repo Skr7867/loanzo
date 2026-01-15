@@ -311,6 +311,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
               _timelineItem(
                 title: 'Current Stage',
                 status: status.currentStage,
+                isCompleted: true,
               ),
             ],
           ),
