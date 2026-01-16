@@ -44,7 +44,6 @@ class CheckEligibilityController extends GetxController {
   ];
 
   final List<String> sourceTypes = [
-    'Savings',
     'Rental Income',
     'PF/EPF',
     'Side Business',

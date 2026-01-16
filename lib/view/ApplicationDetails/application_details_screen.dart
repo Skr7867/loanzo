@@ -4,7 +4,9 @@ import 'package:dsa/res/routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../res/color/app_colors.dart';
 import '../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
+import '../../viewModels/controllers/Theme/theme_controller.dart';
 import 'widgets/overview_widget.dart';
 
 class ApplicationDetailsScreen extends StatelessWidget {
@@ -13,6 +15,8 @@ class ApplicationDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ApplicationDetailsController());
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -56,11 +60,11 @@ class ApplicationDetailsScreen extends StatelessWidget {
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: isDark ? AppColors.blackColor : Colors.white,
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withOpacity(0.25),
                         blurRadius: 12,
                       ),
                     ],
@@ -82,7 +86,9 @@ class ApplicationDetailsScreen extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xffF1F3F5),
+                              color: isDark
+                                  ? Colors.black
+                                  : const Color(0xffF1F3F5),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -112,21 +118,24 @@ class ApplicationDetailsScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 46,
                         child: ElevatedButton.icon(
-                          onPressed:
-                              data.applicationStatus.currentStage == 'Submitted'
-                              ? null
-                              : () {
-                                  Get.toNamed(
-                                    RouteName.stageTwoScreen,
-                                    arguments: data.id,
-                                  );
-                                },
+                          onPressed: () {
+                            if (data.applicationStatus.currentStage ==
+                                'Submitted') {
+                              // Do nothing OR show toast
+                              return;
+                            }
+
+                            Get.toNamed(
+                              RouteName.stageTwoScreen,
+                              arguments: data.id,
+                            );
+                          },
                           icon: const Icon(Icons.check_box_outlined, size: 18),
                           label: Text(
                             data.applicationStatus.currentStage == 'Submitted'
                                 ? 'Submitted'
                                 : 'Continue Stage 2',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontFamily: AppFonts.opensansRegular,
                             ),
@@ -135,8 +144,12 @@ class ApplicationDetailsScreen extends StatelessWidget {
                             backgroundColor:
                                 data.applicationStatus.currentStage ==
                                     'Submitted'
-                                ? Colors.orange
+                                ? AppColors.textColor
                                 : const Color(0xff2563EB),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.orange,
+                            disabledForegroundColor: Colors.white,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -150,9 +163,10 @@ class ApplicationDetailsScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: const Color(0xffF0FFF4),
+                          color: isDark
+                              ? Colors.black
+                              : const Color(0xffF0FFF4),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xffBBF7D0)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +209,9 @@ class ApplicationDetailsScreen extends StatelessWidget {
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: isDark
+                                    ? AppColors.blackColor
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: const Color(0xffBBF7D0),

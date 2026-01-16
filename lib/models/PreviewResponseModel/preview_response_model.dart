@@ -71,10 +71,10 @@ class Data {
     sId = json['_id'];
     userId = json['userId'];
     cibilScore = json['cibilScore'];
-    loanAmount = json['loanAmount'];
-    loanTenureMonths = json['loanTenureMonths'];
+    loanAmount = (json['loanAmount'] as num?)?.toInt();
+    loanTenureMonths = (json['loanTenureMonths'] as num?)?.toInt();
     occupation = json['occupation'];
-    monthlyIncome = json['monthlyIncome'];
+    monthlyIncome = (json['monthlyIncome'] as num?)?.toInt();
 
     salarySlips = json['salarySlips'] != null
         ? List<String>.from(json['salarySlips'])
@@ -86,7 +86,7 @@ class Data {
         ? List<String>.from(json['businessProof'])
         : null;
 
-    creditUtilization = json['creditUtilization'];
+    creditUtilization = (json['creditUtilization'] as num?)?.toInt();
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
@@ -164,13 +164,14 @@ class DtiCalculation {
   });
 
   DtiCalculation.fromJson(Map<String, dynamic> json) {
-    monthlyIncome = json['monthlyIncome'];
-    personalExpensePercentage = json['personalExpensePercentage'];
+    monthlyIncome = (json['monthlyIncome'] as num?)?.toInt();
+    personalExpensePercentage = (json['personalExpensePercentage'] as num?)
+        ?.toInt();
 
     // Use helper method for type-safe conversion
     availableForEMI = _parseDouble(json['availableForEMI']);
 
-    currentEMICommitments = json['currentEMICommitments'];
+    currentEMICommitments = (json['currentEMICommitments'] as num?)?.toInt();
 
     if (json['existingLoansBreakdown'] != null) {
       existingLoansBreakdown = <ExistingLoansBreakdown>[];
@@ -181,7 +182,7 @@ class DtiCalculation {
 
     availableEMICapacity = _parseDouble(json['availableEMICapacity']);
     debtToIncomeRatio = _parseDouble(json['debtToIncomeRatio']);
-    maxEligibleLoanAmount = json['maxEligibleLoanAmount'];
+    maxEligibleLoanAmount = (json['maxEligibleLoanAmount'] as num?)?.toInt();
     calculatedAt = json['calculatedAt'];
   }
 
@@ -233,8 +234,9 @@ class ExistingLoansBreakdown {
   ExistingLoansBreakdown.fromJson(Map<String, dynamic> json) {
     accountType = json['accountType'];
     lender = json['lender'];
-    emiAmount = json['emiAmount'];
-    outstanding = json['outstanding'];
+    emiAmount = (json['emiAmount'] as num?)?.toInt();
+    outstanding = (json['outstanding'] as num?)?.toInt();
+
     sId = json['_id'];
   }
 
@@ -256,7 +258,8 @@ class DownPaymentCapability {
   DownPaymentCapability({this.totalAmount, this.sources});
 
   DownPaymentCapability.fromJson(Map<String, dynamic> json) {
-    totalAmount = json['totalAmount'];
+    totalAmount = (json['totalAmount'] as num?)?.toInt();
+
     if (json['sources'] != null) {
       sources = <Sources>[];
       json['sources'].forEach((v) {
@@ -296,7 +299,8 @@ class Sources {
     sourceType = json['sourceType'];
     customName = json['customName'];
     documents = json['documents'].cast<String>();
-    amount = json['amount'];
+    amount = (json['amount'] as num?)?.toInt();
+
     frequency = json['frequency'];
     sId = json['_id'];
   }
@@ -390,7 +394,7 @@ class VehicleInfo {
     vehicleType = json['vehicleType'];
     vehicleBrand = json['vehicleBrand'];
     vehicleModel = json['vehicleModel'];
-    estimatedPrice = json['estimatedPrice'];
+    estimatedPrice = (json['estimatedPrice'] as num?)?.toInt();
   }
 
   Map<String, dynamic> toJson() {

@@ -2,9 +2,11 @@ import 'package:dsa/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../res/color/app_colors.dart';
 import '../../../viewModels/controllers/Stage2Controller/application_preview_controller.dart';
 import '../../../viewModels/controllers/Stage2Controller/final_submit_controller.dart'
     show FinalSubmitController;
+import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
 class ApplicationPreviewScreen extends StatelessWidget {
   const ApplicationPreviewScreen({super.key});
@@ -19,16 +21,19 @@ class ApplicationPreviewScreen extends StatelessWidget {
     final FinalSubmitController submitController = Get.put(
       FinalSubmitController(),
     );
-
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        leading: const BackButton(color: Colors.black),
-        title: const Text(
+        leading: BackButton(
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
+        title: Text(
           'Application Preview',
           style: TextStyle(
-            color: Colors.black,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -61,7 +66,11 @@ class ApplicationPreviewScreen extends StatelessWidget {
               /// ================= Vehicle Information =================
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: _cardDecoration(),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.blackColor : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -84,7 +93,11 @@ class ApplicationPreviewScreen extends StatelessWidget {
               /// ================= Down Payment Sources =================
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: _cardDecoration(),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.blackColor : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -109,7 +122,9 @@ class ApplicationPreviewScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xffE6EAF0)),
+                          border: Border.all(
+                            color: AppColors.greyColor.withOpacity(0.4),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +166,11 @@ class ApplicationPreviewScreen extends StatelessWidget {
               /// ================= F16 Document =================
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: _cardDecoration(),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.blackColor : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -161,9 +180,13 @@ class ApplicationPreviewScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xffECFDF5),
+                        color: isDark
+                            ? AppColors.blackColor
+                            : const Color(0xffECFDF5),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xffBBF7D0)),
+                        border: Border.all(
+                          color: AppColors.greyColor.withOpacity(0.4),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -205,7 +228,9 @@ class ApplicationPreviewScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: const Color(0xffFFFBEB),
+                  color: isDark
+                      ? AppColors.blackColor
+                      : const Color(0xffFFFBEB),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: const Color(0xffFDE68A)),
                 ),
@@ -322,11 +347,11 @@ class ApplicationPreviewScreen extends StatelessWidget {
 
   /// ---------------- Helpers ----------------
 
-  BoxDecoration _cardDecoration() => BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(12),
-    border: Border.all(color: const Color(0xffE6EAF0)),
-  );
+  // BoxDecoration _cardDecoration() => BoxDecoration(
+  //   color: Colors.white,
+  //   borderRadius: BorderRadius.circular(12),
+  //   border: Border.all(color: const Color(0xffE6EAF0)),
+  // );
 
   Widget _sectionHeader(IconData icon, String title) {
     return Row(
@@ -366,10 +391,12 @@ class ApplicationPreviewScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: const Text('Confirm Submission'),
         content: const Text(
           'Are you sure you want to submit this application? '
           'Once submitted, you cannot edit it.',
+          style: TextStyle(fontFamily: AppFonts.opensansRegular),
         ),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),

@@ -5,7 +5,9 @@ import 'package:dsa/viewModels/controllers/Stage2Controller/stage_two_controller
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../res/color/app_colors.dart';
 import '../../viewModels/controllers/Stage2Controller/save_and_preview_controller.dart';
+import '../../viewModels/controllers/Theme/theme_controller.dart';
 import 'widgets/f16_and_summary_section.dart';
 
 class StageTwoScreen extends StatelessWidget {
@@ -28,41 +30,43 @@ class StageTwoScreen extends StatelessWidget {
     final horizontalPadding = isTablet ? 24.0 : 16.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
       appBar: CustomAppBar(
         title: 'Stage 2: Additional Details',
         automaticallyImplyLeading: true,
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-            vertical: 16,
-          ),
-          child: Column(
-            children: [
-              // Progress Indicator
-              _buildProgressIndicator(isTablet),
-              const SizedBox(height: 24),
+      body: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: 16,
+            ),
+            child: Column(
+              children: [
+                // Progress Indicator
+                _buildProgressIndicator(isTablet),
+                const SizedBox(height: 24),
 
-              // Vehicle Information Section
-              _buildVehicleInformationCard(isTablet),
-              const SizedBox(height: 20),
+                // Vehicle Information Section
+                _buildVehicleInformationCard(isTablet),
+                const SizedBox(height: 20),
 
-              // Down Payment Sources Section
-              _buildDownPaymentSourcesCard(isTablet),
-              const SizedBox(height: 20),
+                // Down Payment Sources Section
+                _buildDownPaymentSourcesCard(context, isTablet),
+                const SizedBox(height: 20),
 
-              // F16 and Summary Section
-              F16AndSummarySection(
-                onUploadTap: controller.pickF16Document,
-                onSavePreviewTap: () {
-                  apiController.submitStageTwo(loanRequestId: loanRequestId);
-                },
-              ),
-              const SizedBox(height: 24),
-            ],
+                // F16 and Summary Section
+                F16AndSummarySection(
+                  onUploadTap: controller.pickF16Document,
+                  onSavePreviewTap: () {
+                    apiController.submitStageTwo(loanRequestId: loanRequestId);
+                  },
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),
@@ -119,7 +123,7 @@ class StageTwoScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: isTablet ? 18 : 16,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1E293B),
+
                     fontFamily: AppFonts.opensansRegular,
                   ),
                 ),
@@ -142,9 +146,11 @@ class StageTwoScreen extends StatelessWidget {
 
   // ==================== Vehicle Information Card ====================
   Widget _buildVehicleInformationCard(bool isTablet) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -195,7 +201,6 @@ class StageTwoScreen extends StatelessWidget {
                       fontSize: isTablet ? 18 : 16,
                       fontWeight: FontWeight.w700,
                       fontFamily: AppFonts.opensansRegular,
-                      color: const Color(0xFF1E293B),
                     ),
                   ),
                 ),
@@ -273,6 +278,7 @@ class StageTwoScreen extends StatelessWidget {
                         ? null
                         : controller.selectedBrand.value,
                     hint: 'Select Brand',
+
                     items: controller.vehicleBrands,
                     icon: Icons.branding_watermark_outlined,
                     onChanged: (v) => controller.selectedBrand.value = v!,
@@ -317,18 +323,14 @@ class StageTwoScreen extends StatelessWidget {
   }
 
   // ==================== Down Payment Sources Card ====================
-  Widget _buildDownPaymentSourcesCard(bool isTablet) {
+  Widget _buildDownPaymentSourcesCard(BuildContext context, bool isTablet) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
       ),
       child: Column(
         children: [
@@ -336,14 +338,7 @@ class StageTwoScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(isTablet ? 24 : 20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFF8B5CF6).withOpacity(0.08),
-                  const Color(0xFFA78BFA).withOpacity(0.03),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: isDark ? AppColors.blackColor : Colors.white,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -356,12 +351,14 @@ class StageTwoScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF8B5CF6),
+                        color: isDark
+                            ? AppColors.blackColor
+                            : const Color(0xFF8B5CF6),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.account_balance_wallet,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                         size: 20,
                       ),
                     ),
@@ -373,7 +370,6 @@ class StageTwoScreen extends StatelessWidget {
                           fontSize: isTablet ? 18 : 16,
                           fontWeight: FontWeight.w700,
                           fontFamily: AppFonts.opensansRegular,
-                          color: const Color(0xFF1E293B),
                         ),
                       ),
                     ),
@@ -397,7 +393,9 @@ class StageTwoScreen extends StatelessWidget {
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                      color: isDark
+                          ? AppColors.blackColor
+                          : const Color(0xFF8B5CF6).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: const Color(0xFF8B5CF6).withOpacity(0.3),
@@ -419,7 +417,7 @@ class StageTwoScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: isTablet ? 14 : 13,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF1E293B),
+
                                 fontFamily: AppFonts.opensansRegular,
                               ),
                             ),
@@ -505,26 +503,15 @@ class StageTwoScreen extends StatelessWidget {
 
   // ==================== Individual Source Card ====================
   Widget _buildSourceCard(dynamic source, int index, bool isTablet) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.white, const Color(0xFF8B5CF6).withOpacity(0.02)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF8B5CF6).withOpacity(0.2),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
       ),
       child: Column(
         children: [
@@ -532,11 +519,15 @@ class StageTwoScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(isTablet ? 16 : 14),
             decoration: BoxDecoration(
-              color: const Color(0xFF8B5CF6).withOpacity(0.05),
+              color: isDark
+                  ? Colors.black
+                  : const Color(0xFF8B5CF6).withOpacity(0.05),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
+
+              border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
             ),
             child: Row(
               children: [
@@ -564,7 +555,6 @@ class StageTwoScreen extends StatelessWidget {
                       fontSize: isTablet ? 15 : 14,
                       fontWeight: FontWeight.w600,
                       fontFamily: AppFonts.opensansRegular,
-                      color: const Color(0xFF1E293B),
                     ),
                   ),
                 ),
@@ -605,7 +595,11 @@ class StageTwoScreen extends StatelessWidget {
                         : source.sourceType.value,
                     items: controller.sourceTypes,
                     icon: Icons.source_outlined,
-                    onChanged: (v) => source.sourceType.value = v!,
+                    onChanged: (v) {
+                      if (v != null) {
+                        source.sourceType.value = v;
+                      }
+                    },
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -774,7 +768,6 @@ class StageTwoScreen extends StatelessWidget {
             fontSize: isTablet ? 14 : 13,
             fontWeight: FontWeight.w600,
             fontFamily: AppFonts.opensansRegular,
-            color: const Color(0xFF1E293B),
           ),
         ),
         if (isRequired) ...[
@@ -800,61 +793,70 @@ class StageTwoScreen extends StatelessWidget {
     required IconData icon,
     String? value,
   }) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
+        color: isDark ? AppColors.blackColor : Colors.white,
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
         ],
       ),
       child: DropdownButtonFormField<String>(
-        style: const TextStyle(
-          fontFamily: AppFonts.opensansRegular,
-          color: Color(0xFF1E293B),
-          fontSize: 14,
-        ),
+        dropdownColor: isDark ? AppColors.blackColor : Colors.white,
         value: value,
+        style: TextStyle(
+          fontFamily: AppFonts.opensansRegular,
+          fontSize: 14,
+          color: value != null
+              ? (isDark ? Colors.white : Colors.black)
+              : Colors.grey,
+        ),
         items: items
             .map(
-              (e) => DropdownMenuItem(
+              (e) => DropdownMenuItem<String>(
                 value: e,
                 child: Text(
                   e,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
                     fontFamily: AppFonts.opensansRegular,
+                    fontSize: 14,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
               ),
             )
             .toList(),
         onChanged: onChanged,
-        icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B)),
+        icon: Icon(
+          Icons.keyboard_arrow_down,
+          color: isDark ? Colors.white : const Color(0xFF64748B),
+        ),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
             fontFamily: AppFonts.opensansRegular,
-            color: Colors.grey[400],
+            color: AppColors.greyColor,
             fontSize: 14,
           ),
-          prefixIcon: Icon(icon, size: 20, color: const Color(0xFF64748B)),
-          filled: true,
-          fillColor: Colors.white,
+          prefixIcon: Icon(
+            icon,
+            size: 20,
+            color: isDark ? Colors.white : const Color(0xFF64748B),
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+            borderSide: BorderSide(color: AppColors.greyColor.withOpacity(0.4)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+            borderSide: BorderSide(color: AppColors.greyColor.withOpacity(0.4)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFF2563EB), width: 2),
+            borderSide: const BorderSide(color: Color(0xFF2563EB)),
           ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -888,7 +890,7 @@ class StageTwoScreen extends StatelessWidget {
         style: const TextStyle(
           fontFamily: AppFonts.opensansRegular,
           fontSize: 14,
-          color: Color(0xFF1E293B),
+          // color: Color(0xFF1E293B),
         ),
         onChanged: onChanged,
         keyboardType: keyboardType ?? TextInputType.text,
@@ -907,19 +909,24 @@ class StageTwoScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
           prefixIcon: Icon(icon, size: 20, color: const Color(0xFF64748B)),
-          filled: true,
-          fillColor: Colors.white,
+
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+            borderSide: BorderSide(
+              color: AppColors.greyColor.withOpacity(0.4),
+              width: 1,
+            ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+            borderSide: BorderSide(
+              color: AppColors.greyColor.withOpacity(0.4),
+              width: 1,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFF2563EB), width: 2),
+            borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1),
           ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,

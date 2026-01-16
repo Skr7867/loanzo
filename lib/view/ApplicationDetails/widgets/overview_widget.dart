@@ -1,4 +1,5 @@
 import 'package:dsa/res/color/app_colors.dart';
+import 'package:dsa/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,6 +33,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
         /// 🔹 TABS CONTAINER
         Container(
           padding: const EdgeInsets.all(6),
+          margin: EdgeInsets.symmetric(horizontal: 18),
           decoration: BoxDecoration(
             color: isDark ? AppColors.blackColor : Colors.white,
             borderRadius: BorderRadius.circular(14),
@@ -87,7 +89,24 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
     required String title,
     required LoanTab tab,
   }) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     final bool isSelected = selectedTab == tab;
+
+    // 🎯 Background color logic
+    final Color backgroundColor = isSelected
+        ? const Color(0xff1677FF)
+        : isDark
+        ? Colors
+              .black // Dark theme unselected
+        : Colors.white; // Light theme unselected
+
+    // 🎯 Text & icon color logic
+    final Color contentColor = isSelected
+        ? Colors.white
+        : isDark
+        ? Colors.white
+        : Colors.black;
 
     return GestureDetector(
       onTap: () {
@@ -100,7 +119,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xff1677FF) : Colors.white,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected ? const Color(0xff1677FF) : Colors.grey.shade300,
@@ -108,18 +127,15 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 18,
-              color: isSelected ? Colors.white : Colors.black87,
-            ),
+            Icon(icon, size: 18, color: contentColor),
             const SizedBox(width: 6),
             Text(
               title,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white : Colors.black87,
+                color: contentColor,
+                fontFamily: AppFonts.opensansRegular,
               ),
             ),
           ],
@@ -152,7 +168,8 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
   Widget _contentBox() {
     final app = controller.application!;
     final dti = app.dtiCalculation;
-
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Column(
       children: [
         /// 🔹 LOAN CALCULATION
@@ -160,21 +177,31 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? AppColors.blackColor : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade300),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// HEADER
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.show_chart, size: 20),
+                  Icon(
+                    Icons.show_chart,
+                    size: 20,
+                    color: isDark ? Colors.white : AppColors.blackColor,
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'Loan Calculation Analysis',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: AppFonts.opensansRegular,
+                    ),
                   ),
                 ],
               ),
@@ -185,7 +212,9 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF8E1),
+                  color: isDark
+                      ? AppColors.blackColor
+                      : const Color(0xFFFFF8E1),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: const Color(0xFFFFE082)),
                 ),
@@ -252,6 +281,8 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
 
   Widget loanRequestAndTimelineCard(LoanApplicationData app) {
     final status = app.applicationStatus;
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
 
     return Column(
       children: [
@@ -259,9 +290,11 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? AppColors.blackColor : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade300),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+            ],
           ),
           child: Column(
             children: [
@@ -289,12 +322,19 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
         ),
 
         Container(
-          margin: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+            bottom: 50,
+          ),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? AppColors.blackColor : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade300),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+            ],
           ),
           child: Column(
             children: [
@@ -324,7 +364,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
     required IconData icon,
     required String label,
     required String value,
-    Color valueColor = Colors.black,
+    Color valueColor = Colors.red,
     String? subText,
   }) {
     return Row(
@@ -334,7 +374,11 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              fontFamily: AppFonts.opensansRegular,
+            ),
           ),
         ),
         Column(
@@ -346,12 +390,17 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: valueColor,
+                fontFamily: AppFonts.opensansRegular,
               ),
             ),
             if (subText != null)
               Text(
                 subText,
-                style: const TextStyle(fontSize: 10, color: Colors.grey),
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
               ),
           ],
         ),
@@ -384,6 +433,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
+                    fontFamily: AppFonts.opensansRegular,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -392,6 +442,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                   style: TextStyle(
                     fontSize: 11,
                     color: isCompleted ? Colors.green : Colors.grey,
+                    fontFamily: AppFonts.opensansRegular,
                   ),
                 ),
               ],
@@ -400,7 +451,11 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
           if (date != null)
             Text(
               date,
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 11,
+                color: Colors.grey,
+                fontFamily: AppFonts.opensansRegular,
+              ),
             ),
         ],
       ),
@@ -409,25 +464,37 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
 
   Widget _customerInformationCard(LoanApplicationData app) {
     final user = app.userId;
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
 
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.person_outline, size: 20),
+              Icon(
+                Icons.person_outline,
+                size: 20,
+                color: isDark ? Colors.white : AppColors.blackColor,
+              ),
               SizedBox(width: 8),
               Text(
                 'Customer Information',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
               ),
             ],
           ),
@@ -443,9 +510,9 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                 child: Text(
                   user.name.isNotEmpty ? user.name[0] : '-',
                   style: const TextStyle(
-                    color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
+                    fontFamily: AppFonts.opensansRegular,
                   ),
                 ),
               ),
@@ -458,11 +525,16 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
+                      fontFamily: AppFonts.opensansRegular,
                     ),
                   ),
                   const Text(
                     'Applicant',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontFamily: AppFonts.opensansRegular,
+                    ),
                   ),
                 ],
               ),
@@ -544,12 +616,14 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
     required String title,
     required String value,
   }) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isDark ? AppColors.blackColor : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,7 +636,11 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -570,6 +648,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    fontFamily: AppFonts.opensansRegular,
                   ),
                 ),
               ],
@@ -587,13 +666,16 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
     required IconData icon,
     required Color iconBg,
   }) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
       ),
       child: Row(
         children: [
@@ -617,7 +699,10 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -626,6 +711,7 @@ class _LoanTabsSectionState extends State<LoanTabsSection> {
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: valueColor,
+                    fontFamily: AppFonts.opensansRegular,
                   ),
                 ),
               ],

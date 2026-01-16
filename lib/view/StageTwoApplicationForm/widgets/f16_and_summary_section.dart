@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../models/ApplicationLoanDetails/application_loan_details_model.dart';
+import '../../../res/color/app_colors.dart';
 import '../../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
 import '../../../viewModels/controllers/Stage2Controller/save_and_preview_controller.dart';
+import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
 class F16AndSummarySection extends StatelessWidget {
   final VoidCallback onUploadTap;
@@ -53,17 +55,13 @@ class F16AndSummarySection extends StatelessWidget {
 
   // ==================== F16 Document Card ====================
   Widget _buildF16DocumentCard(bool isTablet) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
       ),
       child: Column(
         children: [
@@ -106,7 +104,6 @@ class F16AndSummarySection extends StatelessWidget {
                       fontSize: isTablet ? 18 : 16,
                       fontWeight: FontWeight.w700,
                       fontFamily: AppFonts.opensansRegular,
-                      color: const Color(0xFF1E293B),
                     ),
                   ),
                 ),
@@ -209,7 +206,6 @@ class F16AndSummarySection extends StatelessWidget {
                 fontSize: isTablet ? 16 : 14,
                 fontWeight: FontWeight.w700,
                 fontFamily: AppFonts.opensansRegular,
-                color: const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 6),
@@ -437,17 +433,13 @@ class F16AndSummarySection extends StatelessWidget {
 
   // ==================== Basic Details Card ====================
   Widget _buildBasicDetailsCard(bool isTablet, LoanApplicationData app) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
       ),
       child: Column(
         children: [
@@ -490,7 +482,6 @@ class F16AndSummarySection extends StatelessWidget {
                       fontSize: isTablet ? 18 : 16,
                       fontWeight: FontWeight.w700,
                       fontFamily: AppFonts.opensansRegular,
-                      color: const Color(0xFF1E293B),
                     ),
                   ),
                 ),
@@ -588,7 +579,7 @@ class F16AndSummarySection extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 14,
                 fontFamily: AppFonts.opensansRegular,
-                color: Color(0xFF64748B),
+
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -599,7 +590,7 @@ class F16AndSummarySection extends StatelessWidget {
               fontSize: 15,
               fontWeight: FontWeight.w700,
               fontFamily: AppFonts.opensansRegular,
-              color: Color(0xFF1E293B),
+              color: AppColors.textColor,
             ),
           ),
         ],
@@ -611,23 +602,19 @@ class F16AndSummarySection extends StatelessWidget {
   Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Divider(color: Colors.grey[200], height: 1),
+      child: Divider(color: AppColors.greyColor.withOpacity(0.4), height: 1),
     );
   }
 
   // ==================== Quick Tips Card ====================
   Widget _buildQuickTipsCard(bool isTablet) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
       ),
       child: Column(
         children: [
@@ -669,7 +656,6 @@ class F16AndSummarySection extends StatelessWidget {
                     fontSize: isTablet ? 18 : 16,
                     fontWeight: FontWeight.w700,
                     fontFamily: AppFonts.opensansRegular,
-                    color: const Color(0xFF1E293B),
                   ),
                 ),
               ],

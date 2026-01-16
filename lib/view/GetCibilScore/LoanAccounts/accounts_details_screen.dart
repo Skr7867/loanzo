@@ -114,29 +114,50 @@ class AccountsDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 /// ================= FINANCIAL INFO =================
-                const Text(
-                  'Financial Information',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: AppFonts.opensansRegular,
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.blackColor : Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 12,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Financial Information',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: AppFonts.opensansRegular,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      _financialTile(
+                        'Current Balance',
+                        '₹${account.currentBalance ?? 0}',
+                      ),
+                      _financialTile(
+                        'High Credit',
+                        '₹${account.highCreditAmount ?? 0}',
+                      ),
+                      _financialTile(
+                        'Amount Overdue',
+                        '₹${account.amountOverdue ?? 0}',
+                      ),
+                      _financialTile(
+                        'EMI Amount',
+                        '₹${account.emiAmount ?? 0}',
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-
-                _financialTile(
-                  'Current Balance',
-                  '₹${account.currentBalance ?? 0}',
-                ),
-                _financialTile(
-                  'High Credit',
-                  '₹${account.highCreditAmount ?? 0}',
-                ),
-                _financialTile(
-                  'Amount Overdue',
-                  '₹${account.amountOverdue ?? 0}',
-                ),
-                _financialTile('EMI Amount', '₹${account.emiAmount ?? 0}'),
 
                 const SizedBox(height: 20),
 
@@ -204,7 +225,12 @@ class AccountsDetailsScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
-      decoration: _cardDecoration(),
+      // decoration: _cardDecoration(),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+
       child: Row(
         children: [
           Expanded(
@@ -212,7 +238,6 @@ class AccountsDetailsScreen extends StatelessWidget {
               title,
               style: const TextStyle(
                 fontSize: 13,
-
                 fontFamily: AppFonts.opensansRegular,
               ),
             ),
@@ -242,64 +267,50 @@ class AccountsDetailsScreen extends StatelessWidget {
             const Text(
               'Monthly Payment History',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 fontFamily: AppFonts.opensansRegular,
               ),
             ),
-            Text(
-              'Total: ${history.length} months',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-                fontFamily: AppFonts.opensansRegular,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${history.length} months',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: history.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 2.2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
+            crossAxisCount: 5,
+            childAspectRatio: 0.8,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
           ),
           itemBuilder: (_, index) {
             final item = history[index];
-            return Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.date ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: const [
-                      Icon(Icons.check_circle, size: 14, color: Colors.green),
-                      SizedBox(width: 6),
-                      Text(
-                        'Paid on Time',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.green,
-                          fontFamily: AppFonts.opensansRegular,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            final isPaidOnTime =
+                item.status == 'paid' ||
+                item.status == 'On Time'; // Adjust based on your data model
+
+            return _PaymentStatusCircle(
+              date: item.date ?? '',
+              isPaidOnTime: isPaidOnTime,
+              index: index,
             );
           },
         ),
@@ -380,14 +391,140 @@ class AccountsDetailsScreen extends StatelessWidget {
     return BoxDecoration(
       color: isDark ? AppColors.blackColor : Colors.white,
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
+
       boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.04),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
+        BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
       ],
     );
+  }
+}
+
+class _PaymentStatusCircle extends StatefulWidget {
+  final String date;
+  final bool isPaidOnTime;
+  final int index;
+
+  const _PaymentStatusCircle({
+    required this.date,
+    required this.isPaidOnTime,
+    required this.index,
+  });
+
+  @override
+  State<_PaymentStatusCircle> createState() => _PaymentStatusCircleState();
+}
+
+class _PaymentStatusCircleState extends State<_PaymentStatusCircle>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 300 + (widget.index * 50)),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.isPaidOnTime ? Colors.green : Colors.red;
+    final bgColor = widget.isPaidOnTime
+        ? Colors.green.shade50
+        : Colors.red.shade50;
+
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: bgColor,
+                border: Border.all(color: color.withOpacity(0.3), width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  widget.isPaidOnTime ? Icons.check : Icons.close,
+                  color: color,
+                  size: 32,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _formatDate(widget.date),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                fontFamily: AppFonts.opensansRegular,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(String date) {
+    // Format date as needed, e.g., "Jan 24" or "01/24"
+    try {
+      final parsedDate = DateTime.parse(date);
+      return '${_getMonthAbbr(parsedDate.month)} ${parsedDate.year.toString().substring(2)}';
+    } catch (e) {
+      return date;
+    }
+  }
+
+  String _getMonthAbbr(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return months[month - 1];
   }
 }

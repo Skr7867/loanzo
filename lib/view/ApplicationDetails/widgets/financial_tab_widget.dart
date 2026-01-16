@@ -1,6 +1,9 @@
+import 'package:dsa/res/color/app_colors.dart';
+import 'package:dsa/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
+import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
 class FinancialTabScreen extends StatelessWidget {
   const FinancialTabScreen({super.key});
@@ -54,8 +57,19 @@ class _CustomerDTIRatioCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _card(
-      borderColor: Colors.green,
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
+    return Container(
+      padding: EdgeInsets.all(8),
+
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.blackColor : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -101,7 +115,18 @@ class _IncomeDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _card(
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+    return Container(
+      padding: EdgeInsets.all(8),
+
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.blackColor : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -140,7 +165,17 @@ class _ExpenseBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _card(
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.blackColor : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -174,9 +209,19 @@ class _EMIStatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Column(
       children: [
-        _card(
+        Container(
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.blackColor : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+            ],
+          ),
           child: _InfoTile(
             label: 'Available for EMI',
             value: '₹${dti.availableForEMI}',
@@ -185,7 +230,15 @@ class _EMIStatsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _card(
+        Container(
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.blackColor : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+            ],
+          ),
           child: _InfoTile(
             label: 'Available EMI Capacity',
             value: '₹${dti.availableEMICapacity}',
@@ -194,9 +247,13 @@ class _EMIStatsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _card(
-          borderColor: Colors.blue,
-          bgColor: Colors.blue.shade50,
+        Container(
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.blackColor : Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(10),
+          ),
+
           child: _InfoTile(
             label: 'Maximum Eligible Amount',
             value: '₹${dti.maxEligibleLoanAmount}',
@@ -220,7 +277,18 @@ class _DTIAnalysisLevelsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _card(
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+    return Container(
+      margin: EdgeInsets.only(bottom: 50),
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.blackColor : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -236,12 +304,18 @@ class _DTIAnalysisLevelsCard extends StatelessWidget {
   }
 
   Widget _dtiRow(String range, String title, bool isCurrent) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: isCurrent ? Colors.blue.shade50 : Colors.grey.shade100,
+        color: isDark
+            ? AppColors.blackColor
+            : (isCurrent ? Colors.blue.shade50 : Colors.grey.shade100),
+
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
       ),
       child: Row(
         children: [
@@ -257,7 +331,11 @@ class _DTIAnalysisLevelsCard extends StatelessWidget {
           Expanded(
             child: Text(
               '$range • $title',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontFamily: AppFonts.opensansRegular,
+                color: Colors.grey,
+              ),
             ),
           ),
           if (isCurrent)
@@ -269,7 +347,11 @@ class _DTIAnalysisLevelsCard extends StatelessWidget {
               ),
               child: const Text(
                 'Current',
-                style: TextStyle(color: Colors.white, fontSize: 10),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
               ),
             ),
         ],
@@ -281,19 +363,6 @@ class _DTIAnalysisLevelsCard extends StatelessWidget {
 /* -------------------------------------------------------
    COMMON WIDGETS
 --------------------------------------------------------*/
-
-Widget _card({required Widget child, Color? borderColor, Color? bgColor}) {
-  return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: bgColor ?? Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: borderColor ?? Colors.grey.shade300),
-    ),
-    child: child,
-  );
-}
 
 Widget _titleWithBadge(String title, String value, Color color) {
   return Row(
@@ -325,9 +394,21 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if (icon != null) Icon(icon, size: 18),
+        if (icon != null)
+          Icon(
+            icon,
+            size: 18,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
         if (icon != null) const SizedBox(width: 6),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontFamily: AppFonts.opensansRegular,
+            color: Colors.grey,
+          ),
+        ),
       ],
     );
   }
@@ -356,7 +437,7 @@ class _InfoTile extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -366,7 +447,11 @@ class _InfoTile extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -374,13 +459,18 @@ class _InfoTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: isBold ? 18 : 16,
                   fontWeight: FontWeight.w600,
-                  color: valueColor ?? Colors.black,
+                  color: valueColor ?? Colors.blueGrey,
+                  fontFamily: AppFonts.opensansRegular,
                 ),
               ),
               if (subtitle != null)
                 Text(
                   subtitle!,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
                 ),
             ],
           ),
