@@ -93,7 +93,10 @@ class ApplicationDetailsScreen extends StatelessWidget {
                             ),
                             child: Text(
                               data.id,
-                              style: const TextStyle(fontSize: 12),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontFamily: AppFonts.opensansRegular,
+                              ),
                             ),
                           ),
                         ],
@@ -199,6 +202,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Color(0xff166534),
+                                fontFamily: AppFonts.opensansRegular,
                               ),
                             ),
 
@@ -225,6 +229,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xff15803D),
+                                      fontFamily: AppFonts.opensansRegular,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -233,6 +238,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey,
+                                      fontFamily: AppFonts.opensansRegular,
                                     ),
                                   ),
                                 ],

@@ -36,7 +36,7 @@ class StageTwoApiController extends GetxController {
     // Improved validation
     for (int i = 0; i < stageTwoController.sources.length; i++) {
       final source = stageTwoController.sources[i];
-      if (source.sourceType.value.isEmpty) {
+      if (source.sourceType.value!.isEmpty) {
         Get.snackbar(
           'Validation Error',
           'Please select Source Type for Source ${i + 1}',

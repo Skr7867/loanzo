@@ -19,7 +19,7 @@ class StageTwoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String loanRequestId = Get.arguments as String;
+    final String? loanRequestId = Get.arguments;
     final StageTwoApiController apiController = Get.put(
       StageTwoApiController(),
     );
@@ -61,6 +61,7 @@ class StageTwoScreen extends StatelessWidget {
                 F16AndSummarySection(
                   onUploadTap: controller.pickF16Document,
                   onSavePreviewTap: () {
+                    if (loanRequestId == null) return;
                     apiController.submitStageTwo(loanRequestId: loanRequestId);
                   },
                 ),
@@ -260,7 +261,9 @@ class StageTwoScreen extends StatelessWidget {
                     hint: 'Select Vehicle Type',
                     items: controller.vehicleTypes,
                     icon: Icons.category_outlined,
-                    onChanged: (v) => controller.vehicleType.value = v!,
+                    onChanged: (v) {
+                      if (v != null) controller.vehicleType.value = v;
+                    },
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -278,7 +281,6 @@ class StageTwoScreen extends StatelessWidget {
                         ? null
                         : controller.selectedBrand.value,
                     hint: 'Select Brand',
-
                     items: controller.vehicleBrands,
                     icon: Icons.branding_watermark_outlined,
                     onChanged: (v) => controller.selectedBrand.value = v!,
@@ -309,7 +311,7 @@ class StageTwoScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 _buildEnhancedTextField(
                   hint: '10,00,000',
-                  prefix: '₹ ',
+
                   icon: Icons.currency_rupee,
                   keyboardType: TextInputType.number,
                   onChanged: (v) => controller.estimatedPrice.value = v,
@@ -590,18 +592,13 @@ class StageTwoScreen extends StatelessWidget {
                 Obx(
                   () => _buildEnhancedDropdown(
                     hint: 'Select Type',
-                    value: source.sourceType.value.isEmpty
-                        ? null
-                        : source.sourceType.value,
+                    value: source.sourceType.value,
                     items: controller.sourceTypes,
                     icon: Icons.source_outlined,
-                    onChanged: (v) {
-                      if (v != null) {
-                        source.sourceType.value = v;
-                      }
-                    },
+                    onChanged: (v) => source.sourceType.value = v,
                   ),
                 ),
+
                 const SizedBox(height: 16),
 
                 // Amount
@@ -613,7 +610,7 @@ class StageTwoScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 _buildEnhancedTextField(
                   hint: '50,000',
-                  prefix: '₹ ',
+
                   icon: Icons.currency_rupee,
                   keyboardType: TextInputType.number,
                   onChanged: (v) => source.amount.value = v,
@@ -804,7 +801,7 @@ class StageTwoScreen extends StatelessWidget {
           BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
         ],
       ),
-      child: DropdownButtonFormField<String>(
+      child: DropdownButtonFormField<String?>(
         dropdownColor: isDark ? AppColors.blackColor : Colors.white,
         value: value,
         style: TextStyle(
@@ -816,7 +813,7 @@ class StageTwoScreen extends StatelessWidget {
         ),
         items: items
             .map(
-              (e) => DropdownMenuItem<String>(
+              (e) => DropdownMenuItem<String?>(
                 value: e,
                 child: Text(
                   e,
@@ -836,11 +833,11 @@ class StageTwoScreen extends StatelessWidget {
         ),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(
-            fontFamily: AppFonts.opensansRegular,
-            color: AppColors.greyColor,
-            fontSize: 14,
-          ),
+          // hintStyle: TextStyle(
+          //   fontFamily: AppFonts.opensansRegular,
+          //   color: AppColors.textColor,
+          //   fontSize: 14,
+          // ),
           prefixIcon: Icon(
             icon,
             size: 20,

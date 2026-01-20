@@ -43,7 +43,10 @@ class CamReportScreen extends StatelessWidget {
           body: Center(
             child: Text(
               controller.errorMessage.value,
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(
+                fontSize: 16,
+                fontFamily: AppFonts.opensansRegular,
+              ),
             ),
           ),
         );
@@ -52,7 +55,15 @@ class CamReportScreen extends StatelessWidget {
       // ⚠️ NO DATA
       if (!controller.hasData) {
         return const Scaffold(
-          body: Center(child: Text('CAM report not available')),
+          body: Center(
+            child: Text(
+              'CAM report not available',
+              style: TextStyle(
+                fontFamily: AppFonts.opensansRegular,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         );
       }
 

@@ -50,7 +50,7 @@ class FinalSubmitController extends GetxController {
           Get.snackbar(
             'Success',
             response.data['message'] ?? 'Application submitted successfully',
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );

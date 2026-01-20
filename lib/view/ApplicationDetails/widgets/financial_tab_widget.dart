@@ -368,7 +368,13 @@ Widget _titleWithBadge(String title, String value, Color color) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+      Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontFamily: AppFonts.opensansRegular,
+        ),
+      ),
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(

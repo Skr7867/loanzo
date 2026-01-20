@@ -1,7 +1,10 @@
+import 'package:dsa/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../res/color/app_colors.dart';
 import '../../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
+import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
 class ExistingLoanWidgets extends StatelessWidget {
   const ExistingLoanWidgets({super.key});
@@ -170,16 +173,29 @@ class ExistingLoanWidgets extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
                 ),
               ],
             ),
           ),
-          Text(amount, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            amount,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
         ],
       ),
     );
@@ -240,7 +256,11 @@ class ExistingLoanWidgets extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          fontFamily: AppFonts.opensansRegular,
+        ),
       ),
     );
   }
@@ -254,10 +274,13 @@ class ExistingLoanWidgets extends StatelessWidget {
   }
 
   BoxDecoration _boxDecoration() {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
     return BoxDecoration(
-      color: Colors.white,
+      color: isDark ? AppColors.blackColor : Colors.white,
       borderRadius: BorderRadius.circular(14),
-      border: Border.all(color: Colors.grey.shade300),
+      border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
     );
   }
 
@@ -268,9 +291,10 @@ class ExistingLoanWidgets extends StatelessWidget {
             (h) => Expanded(
               child: Text(
                 h,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
+                  fontFamily: AppFonts.opensansRegular,
                 ),
               ),
             ),
@@ -290,10 +314,11 @@ class ExistingLoanWidgets extends StatelessWidget {
                   v,
                   style: TextStyle(
                     fontSize: 12,
-                    color: v == 'Active' ? Colors.green : Colors.black,
+                    color: v == 'Active' ? Colors.green : AppColors.textColor,
                     fontWeight: v == 'Active'
                         ? FontWeight.w600
                         : FontWeight.normal,
+                    fontFamily: AppFonts.opensansRegular,
                   ),
                 ),
               ),
@@ -318,17 +343,27 @@ class _StatBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade300),
-        color: Colors.white,
+        border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
+        color: isDark ? AppColors.blackColor : Colors.white,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
           const SizedBox(height: 6),
           Text(
             value,
@@ -336,6 +371,7 @@ class _StatBox extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: color,
+              fontFamily: AppFonts.opensansRegular,
             ),
           ),
         ],
@@ -355,10 +391,21 @@ class _StatRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.grey,
+            fontFamily: AppFonts.opensansRegular,
+          ),
+        ),
         Text(
           value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: AppFonts.opensansRegular,
+          ),
         ),
       ],
     );

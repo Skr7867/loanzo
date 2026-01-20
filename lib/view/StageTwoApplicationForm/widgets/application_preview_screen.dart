@@ -1,8 +1,6 @@
 import 'package:dsa/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../res/color/app_colors.dart';
 import '../../../viewModels/controllers/Stage2Controller/application_preview_controller.dart';
 import '../../../viewModels/controllers/Stage2Controller/final_submit_controller.dart'
     show FinalSubmitController;
@@ -23,28 +21,70 @@ class ApplicationPreviewScreen extends StatelessWidget {
     );
     final themeController = Get.find<ThemeController>();
     final bool isDark = themeController.isDarkMode.value;
+
+    // Responsive breakpoints
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
+    final horizontalPadding = isTablet ? 24.0 : 16.0;
+
     return Scaffold(
+      backgroundColor: isDark
+          ? const Color(0xff121212)
+          : const Color(0xffF8FAFC),
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: isDark ? const Color(0xff1E1E1E) : Colors.white,
         elevation: 0,
-        leading: BackButton(
-          color: Theme.of(context).textTheme.bodyLarge?.color,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+            size: 20,
+          ),
+          onPressed: () => Get.back(),
         ),
         title: Text(
           'Application Preview',
           style: TextStyle(
             color: Theme.of(context).textTheme.bodyLarge?.color,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontFamily: AppFonts.opensansRegular,
+            letterSpacing: -0.5,
           ),
         ),
+        centerTitle: true,
         actions: [
-          TextButton.icon(
-            onPressed: () {
-              Get.back(); // edit application
-            },
-            icon: const Icon(Icons.edit, size: 18),
-            label: const Text('Edit'),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton.icon(
+              onPressed: () {
+                Get.back(); // edit application
+              },
+              icon: Icon(
+                Icons.edit_outlined,
+                size: 18,
+                color: const Color(0xff2563EB),
+              ),
+              label: Text(
+                'Edit',
+                style: TextStyle(
+                  color: const Color(0xff2563EB),
+                  fontFamily: AppFonts.opensansRegular,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                backgroundColor: const Color(0xff2563EB).withOpacity(0.1),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -53,37 +93,80 @@ class ApplicationPreviewScreen extends StatelessWidget {
         final data = previewController.previewResponse.value?.data;
 
         if (data == null) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    const Color(0xff2563EB),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Loading preview...',
+                  style: TextStyle(
+                    fontFamily: AppFonts.opensansRegular,
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         final vehicle = data.vehicleInfo;
         final sources = data.downPaymentCapability?.sources ?? [];
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: 20,
+          ),
           child: Column(
             children: [
+              /// ================= Progress Indicator =================
+              _buildProgressIndicator(),
+
+              const SizedBox(height: 24),
+
               /// ================= Vehicle Information =================
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.blackColor : Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
-                ),
+              _buildCard(
+                isDark: isDark,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _sectionHeader(Icons.directions_car, 'Vehicle Information'),
-                    const SizedBox(height: 12),
-
-                    _infoRow('Vehicle Type', vehicle?.vehicleType ?? '-'),
-                    _infoRow('Vehicle Brand', vehicle?.vehicleBrand ?? '-'),
-                    _infoRow('Vehicle Model', vehicle?.vehicleModel ?? '-'),
-                    _infoRow(
-                      'Estimated Price',
-                      '₹ ${vehicle?.estimatedPrice ?? 0}',
+                    _sectionHeader(
+                      Icons.directions_car_outlined,
+                      'Vehicle Information',
+                      const Color(0xff2563EB),
                     ),
+                    const SizedBox(height: 20),
+
+                    _buildInfoGrid([
+                      _InfoItem(
+                        'Vehicle Type',
+                        vehicle?.vehicleType ?? '-',
+                        Icons.category_outlined,
+                      ),
+                      _InfoItem(
+                        'Vehicle Brand',
+                        vehicle?.vehicleBrand ?? '-',
+                        Icons.branding_watermark_outlined,
+                      ),
+                      _InfoItem(
+                        'Vehicle Model',
+                        vehicle?.vehicleModel ?? '-',
+                        Icons.model_training_outlined,
+                      ),
+                      _InfoItem(
+                        'Estimated Price',
+                        '₹ ${_formatAmount(vehicle?.estimatedPrice ?? 0)}',
+                        Icons.currency_rupee,
+                      ),
+                    ]),
                   ],
                 ),
               ),
@@ -91,72 +174,124 @@ class ApplicationPreviewScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               /// ================= Down Payment Sources =================
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.blackColor : Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
-                ),
+              _buildCard(
+                isDark: isDark,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        _sectionHeader(
-                          Icons.account_balance_wallet,
-                          'Down Payment Sources',
-                        ),
-                        const Spacer(),
-                        _badge('${sources.length} source(s)'),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    ...sources.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final source = entry.value;
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: AppColors.greyColor.withOpacity(0.4),
+                        Expanded(
+                          child: _sectionHeader(
+                            Icons.account_balance_wallet_outlined,
+                            'Down Payment Sources',
+                            const Color(0xff10B981),
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Source ${index + 1}',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const Spacer(),
-                                _badge(
-                                  '${source.documents?.length ?? 0} doc(s)',
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-
-                            _infoRow('Source Type', source.sourceType ?? '-'),
-                            _infoRow('Amount', '₹ ${source.amount ?? 0}'),
-                            _infoRow('Frequency', source.frequency ?? '-'),
-                            _infoRow(
-                              'Documents',
-                              source.documents?.join(', ') ?? '-',
-                            ),
-                          ],
+                        _badge(
+                          '${sources.length} source(s)',
+                          const Color(0xff10B981),
                         ),
-                      );
-                    }).toList(),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    if (sources.isEmpty)
+                      _buildEmptyState('No payment sources added yet')
+                    else
+                      ...sources.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final source = entry.value;
+
+                        return Container(
+                          margin: EdgeInsets.only(
+                            bottom: index == sources.length - 1 ? 0 : 16,
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xff10B981).withOpacity(0.05),
+                                const Color(0xff10B981).withOpacity(0.02),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xff10B981).withOpacity(0.2),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xff10B981,
+                                      ).withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      '${index + 1}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: AppFonts.opensansRegular,
+                                        color: const Color(0xff10B981),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Source ${index + 1}',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: AppFonts.opensansRegular,
+                                      ),
+                                    ),
+                                  ),
+                                  _badge(
+                                    '${source.documents?.length ?? 0} doc(s)',
+                                    const Color(0xff8B5CF6),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              _infoRow(
+                                'Source Type',
+                                source.sourceType ?? '-',
+                                Icons.source_outlined,
+                              ),
+                              const SizedBox(height: 12),
+                              _infoRow(
+                                'Amount',
+                                '₹ ${_formatAmount(source.amount ?? 0)}',
+                                Icons.account_balance_outlined,
+                              ),
+                              const SizedBox(height: 12),
+                              _infoRow(
+                                'Frequency',
+                                source.frequency ?? '-',
+                                Icons.schedule_outlined,
+                              ),
+                              const SizedBox(height: 12),
+                              _infoRow(
+                                'Documents',
+                                source.documents?.join(', ') ?? '-',
+                                Icons.insert_drive_file_outlined,
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
                   ],
                 ),
               ),
@@ -164,59 +299,90 @@ class ApplicationPreviewScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               /// ================= F16 Document =================
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.blackColor : Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25))],
-                ),
+              _buildCard(
+                isDark: isDark,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _sectionHeader(Icons.description, 'F16 Document'),
-                    const SizedBox(height: 12),
+                    _sectionHeader(
+                      Icons.description_outlined,
+                      'F16 Document',
+                      const Color(0xffF59E0B),
+                    ),
+                    const SizedBox(height: 20),
 
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.blackColor
-                            : const Color(0xffECFDF5),
-                        borderRadius: BorderRadius.circular(8),
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xff16A34A).withOpacity(0.08),
+                            const Color(0xff16A34A).withOpacity(0.03),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.greyColor.withOpacity(0.4),
+                          color: const Color(0xff16A34A).withOpacity(0.3),
+                          width: 1.5,
                         ),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.picture_as_pdf,
-                            color: Color(0xff16A34A),
-                            size: 28,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              data.f16Document?.split('/').last ?? '-',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff16A34A).withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.picture_as_pdf,
+                              color: Color(0xff16A34A),
+                              size: 28,
                             ),
                           ),
-                          const Icon(
-                            Icons.check_circle,
-                            color: Color(0xff16A34A),
-                            size: 18,
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  data.f16Document?.split('/').last ??
+                                      'No document',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: AppFonts.opensansRegular,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: const Color(0xff16A34A),
+                                      size: 14,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Uploaded Successfully',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: const Color(0xff16A34A),
+                                        fontFamily: AppFonts.opensansRegular,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Uploaded',
-                      style: TextStyle(fontSize: 11, color: Color(0xff16A34A)),
                     ),
                   ],
                 ),
@@ -226,98 +392,167 @@ class ApplicationPreviewScreen extends StatelessWidget {
 
               /// ================= Important Notice =================
               Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.blackColor
-                      : const Color(0xffFFFBEB),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xffFDE68A)),
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xffFEF3C7).withOpacity(isDark ? 0.3 : 1),
+                      const Color(0xffFDE68A).withOpacity(isDark ? 0.2 : 1),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xffF59E0B).withOpacity(0.5),
+                    width: 1.5,
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Icon(Icons.info_outline, color: Color(0xffD97706)),
-                    SizedBox(width: 8),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF59E0B).withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.info_outline,
+                        color: const Color(0xffD97706),
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        'Important Notice\n'
-                        'Review all information carefully before submitting. '
-                        'Once submitted, you cannot edit this application.',
-                        style: TextStyle(fontSize: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Important Notice',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: AppFonts.opensansRegular,
+                              color: const Color(0xffD97706),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Review all information carefully before submitting. Once submitted, you cannot edit this application.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: AppFonts.opensansRegular,
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.8)
+                                  : const Color(0xff78716C),
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 28),
 
               /// ================= Action Button =================
               Obx(() {
                 final isSubmitting = submitController.isLoading.value;
                 final isSubmitted = submitController.isSubmitted.value;
 
-                return ElevatedButton(
-                  onPressed: isSubmitting || isSubmitted
-                      ? null
-                      : () {
-                          // Show confirmation dialog
-                          _showConfirmationDialog(
-                            context,
-                            loanRequestId,
-                            submitController,
-                          );
-                        },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 48),
-                    backgroundColor: isSubmitted
-                        ? Colors.green
-                        : const Color(0xff2563EB),
-                    disabledBackgroundColor: isSubmitted
-                        ? Colors.green.withOpacity(0.7)
-                        : const Color(0xff2563EB).withOpacity(0.5),
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: isSubmitting || isSubmitted
+                        ? []
+                        : [
+                            BoxShadow(
+                              color: const Color(0xff2563EB).withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                   ),
-                  child: isSubmitting
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
+                  child: ElevatedButton(
+                    onPressed: isSubmitting || isSubmitted
+                        ? null
+                        : () {
+                            _showConfirmationDialog(
+                              context,
+                              loanRequestId,
+                              submitController,
+                              isDark,
+                            );
+                          },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 56),
+                      backgroundColor: isSubmitted
+                          ? const Color(0xff16A34A)
+                          : const Color(0xff2563EB),
+                      disabledBackgroundColor: isSubmitted
+                          ? const Color(0xff16A34A).withOpacity(0.7)
+                          : const Color(0xff2563EB).withOpacity(0.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: isSubmitting
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               ),
+                              const SizedBox(width: 14),
+                              Text(
+                                'Submitting...',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: AppFonts.opensansRegular,
+                                  fontSize: 16,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          )
+                        : isSubmitted
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check_circle, size: 22),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Submitted Successfully',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: AppFonts.opensansRegular,
+                                  fontSize: 16,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            'Confirm & Submit',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontFamily: AppFonts.opensansRegular,
+                              fontSize: 16,
+                              letterSpacing: 0.5,
                             ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Submitting...',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        )
-                      : isSubmitted
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.check, size: 20),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Submitted Successfully',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        )
-                      : const Text(
-                          'Confirm & Submit',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontFamily: AppFonts.opensansRegular,
                           ),
-                        ),
+                  ),
                 );
               }),
 
@@ -325,12 +560,33 @@ class ApplicationPreviewScreen extends StatelessWidget {
               Obx(() {
                 final error = submitController.errorMessage?.value;
                 if (error != null && error.isNotEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Text(
-                      error,
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
-                      textAlign: TextAlign.center,
+                  return Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.red.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error_outline, color: Colors.red, size: 20),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            error,
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 13,
+                              fontFamily: AppFonts.opensansRegular,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -345,40 +601,202 @@ class ApplicationPreviewScreen extends StatelessWidget {
     );
   }
 
-  /// ---------------- Helpers ----------------
+  /// ---------------- Helper Widgets ----------------
 
-  // BoxDecoration _cardDecoration() => BoxDecoration(
-  //   color: Colors.white,
-  //   borderRadius: BorderRadius.circular(12),
-  //   border: Border.all(color: const Color(0xffE6EAF0)),
-  // );
+  Widget _buildProgressIndicator() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xff2563EB).withOpacity(0.1),
+            const Color(0xff3B82F6).withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xff2563EB),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.preview_outlined, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Review Stage',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: AppFonts.opensansRegular,
+                    color: const Color(0xff2563EB),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Almost there! Review your application',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontFamily: AppFonts.opensansRegular,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _sectionHeader(IconData icon, String title) {
+  Widget _buildCard({required bool isDark, required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xff1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _sectionHeader(IconData icon, String title, Color color) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xff2563EB), size: 20),
-        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 12),
         Text(
           title,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            fontFamily: AppFonts.opensansRegular,
+            letterSpacing: -0.3,
+          ),
         ),
       ],
     );
   }
 
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildInfoGrid(List<_InfoItem> items) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 400;
+
+        if (isWide) {
+          return Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: items.map((item) {
+              return SizedBox(
+                width: (constraints.maxWidth - 12) / 2,
+                child: _infoRow(item.label, item.value, item.icon),
+              );
+            }).toList(),
+          );
+        } else {
+          return Column(
+            children: items.map((item) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: item == items.last ? 0 : 12),
+                child: _infoRow(item.label, item.value, item.icon),
+              );
+            }).toList(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _infoRow(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+      ),
+      child: Row(
         children: [
-          Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          Icon(icon, size: 18, color: Colors.grey.shade600),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                    fontFamily: AppFonts.opensansRegular,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(Icons.inbox_outlined, size: 48, color: Colors.grey.shade400),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+                fontFamily: AppFonts.opensansRegular,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -387,47 +805,134 @@ class ApplicationPreviewScreen extends StatelessWidget {
     BuildContext context,
     String loanRequestId,
     FinalSubmitController submitController,
+    bool isDark,
   ) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: const Text('Confirm Submission'),
-        content: const Text(
-          'Are you sure you want to submit this application? '
-          'Once submitted, you cannot edit it.',
-          style: TextStyle(fontFamily: AppFonts.opensansRegular),
+        backgroundColor: isDark ? const Color(0xff1E1E1E) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(24),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xffEF4444).withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.warning_amber_rounded,
+                color: const Color(0xffEF4444),
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Confirm Submission',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to submit this application? Once submitted, you cannot edit it.',
+          style: TextStyle(
+            fontFamily: AppFonts.opensansRegular,
+            fontSize: 14,
+            height: 1.5,
+            color: Colors.grey.shade700,
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: AppFonts.opensansRegular,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               submitController.submitApplication(loanRequestId: loanRequestId);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Submit'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xffEF4444),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              'Submit',
+              style: TextStyle(
+                fontFamily: AppFonts.opensansRegular,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _badge(String text) {
+  Widget _badge(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xffEEF2FF),
-        borderRadius: BorderRadius.circular(12),
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 11,
-          color: Color(0xff2563EB),
-          fontWeight: FontWeight.w600,
+          color: color,
+          fontWeight: FontWeight.w700,
+          fontFamily: AppFonts.opensansRegular,
         ),
       ),
     );
   }
+
+  String _formatAmount(dynamic amount) {
+    if (amount == null) return '0';
+    final numAmount = amount is String ? double.tryParse(amount) ?? 0 : amount;
+    if (numAmount >= 10000000) {
+      return '${(numAmount / 10000000).toStringAsFixed(2)} Cr';
+    } else if (numAmount >= 100000) {
+      return '${(numAmount / 100000).toStringAsFixed(2)} L';
+    } else if (numAmount >= 1000) {
+      return '${(numAmount / 1000).toStringAsFixed(2)} K';
+    }
+    return numAmount.toStringAsFixed(0);
+  }
+}
+
+class _InfoItem {
+  final String label;
+  final String value;
+  final IconData icon;
+
+  _InfoItem(this.label, this.value, this.icon);
 }

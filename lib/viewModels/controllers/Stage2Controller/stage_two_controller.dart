@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 /// Model for each Down Payment Source
 class DownPaymentSource {
-  RxString sourceType = ''.obs;
+  RxnString sourceType = RxnString();
   RxString amount = ''.obs;
   RxString frequency = 'Monthly'.obs;
   Rx<File?> document = Rx<File?>(null);

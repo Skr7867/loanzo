@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../res/color/app_colors.dart';
+import '../../../res/fonts/app_fonts.dart';
 import '../../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
+import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
 class PaymentHistoryWidget extends StatelessWidget {
   const PaymentHistoryWidget({super.key});
@@ -119,7 +122,11 @@ class PaymentHistoryWidget extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          fontFamily: AppFonts.opensansRegular,
+        ),
       ),
     );
   }
@@ -146,6 +153,7 @@ class PaymentHistoryWidget extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
+                  fontFamily: AppFonts.opensansRegular,
                 ),
               ),
               const Chip(
@@ -187,11 +195,22 @@ class _SummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: AppFonts.opensansRegular,
+            ),
           ),
         ],
       ),
@@ -250,8 +269,20 @@ class _PaymentStatusCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontSize: 12)),
-          Text(value, style: const TextStyle(fontSize: 12)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 12,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
         ],
       ),
     );
@@ -283,17 +314,31 @@ class _BounceCard extends StatelessWidget {
         children: [
           Icon(Icons.error_outline, color: iconColor),
           const SizedBox(height: 6),
-          Text(title, style: const TextStyle(fontSize: 12)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: AppFonts.opensansRegular,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 11, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              fontFamily: AppFonts.opensansRegular,
+            ),
           ),
         ],
       ),
@@ -305,9 +350,19 @@ class _BounceCard extends StatelessWidget {
    SHARED DECORATION
 ======================================================= */
 BoxDecoration _boxDecoration() {
+  final themeController = Get.find<ThemeController>();
+  final bool isDark = themeController.isDarkMode.value;
+
   return BoxDecoration(
-    color: Colors.white,
+    color: isDark ? AppColors.blackColor : Colors.white,
     borderRadius: BorderRadius.circular(12),
-    border: Border.all(color: Colors.grey.shade300),
+    border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
+    boxShadow: [
+      BoxShadow(
+        color: AppColors.blackColor.withOpacity((0.25)),
+        blurRadius: 12,
+        offset: Offset(0, 4),
+      ),
+    ],
   );
 }

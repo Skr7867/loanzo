@@ -1,8 +1,11 @@
+import 'package:dsa/res/color/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../res/fonts/app_fonts.dart';
 import '../../../viewModels/controllers/ApplicationDetails/application_details_controller.dart';
+import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
 class DocumentsWidgets extends StatelessWidget {
   const DocumentsWidgets({super.key});
@@ -39,7 +42,7 @@ class DocumentsWidgets extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.4,
+                childAspectRatio: 1.7,
               ),
               itemBuilder: (context, index) {
                 final items = [
@@ -151,13 +154,18 @@ class DocumentsWidgets extends StatelessWidget {
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              fontFamily: AppFonts.opensansRegular,
               color: Colors.blue,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             data['label']!,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              fontFamily: AppFonts.opensansRegular,
+            ),
           ),
         ],
       ),
@@ -180,7 +188,10 @@ class DocumentsWidgets extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontFamily: AppFonts.opensansRegular,
+              ),
             ),
           ),
           if (verified)
@@ -211,7 +222,7 @@ class DocumentsWidgets extends StatelessWidget {
   }) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: _boxDecoration(borderColor: Colors.green),
+      decoration: _boxDecoration(),
       child: Row(
         children: [
           _iconBox(Icons.picture_as_pdf, Colors.green.shade100),
@@ -222,12 +233,19 @@ class DocumentsWidgets extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontFamily: AppFonts.opensansRegular,
+                  ),
                 ),
               ],
             ),
@@ -251,7 +269,14 @@ class DocumentsWidgets extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Expanded(child: Text(title)),
-          Text(count, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(
+            count,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
         ],
       ),
     );
@@ -265,7 +290,11 @@ class DocumentsWidgets extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFamily: AppFonts.opensansRegular,
+              ),
             ),
           ),
           if (trailing != null) trailing,
@@ -277,7 +306,14 @@ class DocumentsWidgets extends StatelessWidget {
   Widget _outlinedButton(String text, VoidCallback onTap) {
     return OutlinedButton(
       onPressed: onTap,
-      child: Text(text, style: const TextStyle(fontSize: 12)),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          fontFamily: AppFonts.opensansRegular,
+          color: AppColors.textColor,
+        ),
+      ),
     );
   }
 
@@ -292,11 +328,14 @@ class DocumentsWidgets extends StatelessWidget {
     );
   }
 
-  BoxDecoration _boxDecoration({Color borderColor = const Color(0xFFE0E0E0)}) {
+  BoxDecoration _boxDecoration() {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
     return BoxDecoration(
-      color: Colors.white,
+      color: isDark ? AppColors.blackColor : Colors.white,
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: borderColor),
+      border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
     );
   }
 }
