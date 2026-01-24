@@ -7,15 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../viewModels/controllers/RegisteredUser/registered_user_controller.dart';
+import '../../viewModels/controllers/Theme/theme_controller.dart';
+import '../SkeltonBox/cam_report_skelton.dart';
 
 class RegisterUserScreen extends StatelessWidget {
   RegisterUserScreen({super.key});
 
-  final RegisteredUserController controller =
-      Get.put(RegisteredUserController());
+  final RegisteredUserController controller = Get.put(
+    RegisteredUserController(),
+  );
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isTablet = size.width > 600;
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Registered User',
@@ -25,7 +33,7 @@ class RegisterUserScreen extends StatelessWidget {
       body: Obx(() {
         /// 🔹 LOADING STATE
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return CamReportSkeleton(isTablet: isTablet);
         }
 
         final users = controller.usersList;
@@ -48,11 +56,9 @@ class RegisterUserScreen extends StatelessWidget {
             return Container(
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.blueShade.withOpacity(0.2),
+                color: isDark ? AppColors.blackColor : Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: AppColors.greyColor.withOpacity(0.4),
-                ),
+                border: Border.all(color: AppColors.greyColor.withOpacity(0.2)),
               ),
               child: ListTile(
                 leading: CircleAvatar(
@@ -89,9 +95,7 @@ class RegisterUserScreen extends StatelessWidget {
                           /// 🔹 NAVIGATE WITH userId
                           Get.toNamed(
                             RouteName.cibilScoreScreen,
-                            arguments: {
-                              'userId': userId,
-                            },
+                            arguments: {'userId': userId},
                           );
                         },
                   buttonColor: AppColors.blueColor,

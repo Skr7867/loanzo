@@ -31,14 +31,12 @@ class EmiCalculatorScreen extends StatelessWidget {
             children: [
               // Loan Details Card
               _buildLoanDetailsCard(context, isTablet),
-
               const SizedBox(height: 20),
-
+              _buildPaymentBreakdown(isTablet),
+              const SizedBox(height: 20),
               // Monthly EMI Result Card
               _buildEmiResultCard(isTablet),
-
               const SizedBox(height: 20),
-
               // Payment Summary Card
               Obx(
                 () => PaymentSummaryCards(
@@ -55,8 +53,6 @@ class EmiCalculatorScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Payment Breakdown Section
-              _buildPaymentBreakdown(isTablet),
-
               SizedBox(height: 50),
             ],
           ),
@@ -188,21 +184,16 @@ class EmiCalculatorScreen extends StatelessWidget {
   }
 
   Widget _buildEmiResultCard(bool isTablet) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       padding: EdgeInsets.all(isTablet ? 24 : 20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.blueColor, AppColors.blueColor.withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: isDark ? AppColors.blackColor : AppColors.blueColor,
+
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
+          BoxShadow(color: AppColors.blueColor.withOpacity(0.2), blurRadius: 4),
         ],
       ),
       child: Column(
@@ -351,11 +342,11 @@ class EmiCalculatorScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 1),
 
           SizedBox(height: isTablet ? 280 : 240, child: EmiPieChart()),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 1),
 
           // Legend
           Row(

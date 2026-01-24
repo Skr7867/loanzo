@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../viewModels/controllers/EmiCalculators/emi_calculators_controller.dart';
+import '../../../viewModels/controllers/Theme/theme_controller.dart';
 
 class EmiPieChart extends StatelessWidget {
   final EmiController controller = Get.find();
@@ -11,6 +12,9 @@ class EmiPieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+
     return Obx(() {
       final principal = controller.principalPercent;
       final interest = controller.interestPercent;
@@ -20,7 +24,7 @@ class EmiPieChart extends StatelessWidget {
           PieChart(
             PieChartData(
               sectionsSpace: 4,
-              centerSpaceRadius: 60,
+              centerSpaceRadius: 40,
               startDegreeOffset: -90,
               sections: [
                 PieChartSectionData(
@@ -64,10 +68,10 @@ class EmiPieChart extends StatelessWidget {
           // Center text showing total amount
           Center(
             child: Container(
-              width: 120,
-              height: 120,
+              width: 100,
+              height: 100,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? Colors.lightBlueAccent : Colors.white,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(

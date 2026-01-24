@@ -13,7 +13,7 @@ class RegisteredUserController extends GetxController {
   final isLoading = false.obs;
   final registeredUsers = Rxn<RegisterdUserModel>();
 
-  /// 🔐 TOKEN FROM SESSION
+  ///  TOKEN FROM SESSION
   String get token {
     final token = _sessionService.token;
     if (token == null || token.isEmpty) {
@@ -44,10 +44,7 @@ class RegisteredUserController extends GetxController {
     } catch (e) {
       isLoading.value = false;
 
-      Utils.snackBar(
-        e.toString().replaceAll('Exception:', '').trim(),
-        'Error',
-      );
+      Utils.snackBar(e.toString().replaceAll('Exception:', '').trim(), 'Error');
     }
   }
 
