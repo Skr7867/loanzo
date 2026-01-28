@@ -3,7 +3,6 @@ import 'package:dsa/res/custom_widgets/custome_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import '../../res/color/app_colors.dart';
 import '../../res/fonts/app_fonts.dart';
 import '../../viewModels/controllers/Theme/theme_controller.dart';
@@ -37,12 +36,12 @@ class CamReportGenerateScreen extends StatelessWidget {
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.12),
                       blurRadius: 10,
-                      offset: const Offset(0, -4), // 👆 top shadow
+                      offset: const Offset(0, -4), // top shadow
                     ),
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.18),
                       blurRadius: 14,
-                      offset: const Offset(0, 6), // 👇 bottom shadow
+                      offset: const Offset(0, 6), // bottom shadow
                     ),
                   ],
                 ),
@@ -282,12 +281,18 @@ class CamReportGenerateScreen extends StatelessWidget {
                 children: [
                   Text(
                     'No Monthly expenses added yet',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontFamily: AppFonts.opensansRegular,
+                    ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     "Click 'Add Expense' to add your monthly obligations",
-                    style: TextStyle(fontSize: 11),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontFamily: AppFonts.opensansRegular,
+                    ),
                   ),
                 ],
               ),
@@ -373,7 +378,13 @@ class CamReportGenerateScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           /// Expense Type
-          const Text('Expense Type', style: TextStyle(fontSize: 12)),
+          const Text(
+            'Expense Type',
+            style: TextStyle(
+              fontSize: 12,
+              fontFamily: AppFonts.opensansRegular,
+            ),
+          ),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
             dropdownColor: isDark ? AppColors.blackColor : Colors.white,
