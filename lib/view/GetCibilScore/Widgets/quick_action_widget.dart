@@ -22,7 +22,9 @@ class QuickActionsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 2),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

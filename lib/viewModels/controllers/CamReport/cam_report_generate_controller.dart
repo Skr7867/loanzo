@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:dsa/utils/utils.dart';
+import 'package:dsa/viewModels/controllers/CamReport/monthly_expenses.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,8 +24,8 @@ class CamReportGenerateController extends GetxController {
   RxString employmentType = 'Salaried'.obs;
   RxBool hasObligations = false.obs;
   RxBool isLoading = false.obs;
-
   late final String userId;
+  RxList<MonthlyExpense> expenses = <MonthlyExpense>[].obs;
 
   @override
   void onInit() {
@@ -38,6 +39,20 @@ class CamReportGenerateController extends GetxController {
     monthlyIncomeController.dispose();
     obligationAmountController.dispose();
     super.onClose();
+  }
+
+  void addExpense() {
+    expenses.add(
+      MonthlyExpense(
+        amountController: TextEditingController(),
+        noteController: TextEditingController(),
+      ),
+    );
+  }
+
+  void removeExpense(int index) {
+    expenses[index].dispose();
+    expenses.removeAt(index);
   }
 
   /// ================= UI ACTIONS =================

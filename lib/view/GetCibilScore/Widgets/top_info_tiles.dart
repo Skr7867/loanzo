@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../res/fonts/app_fonts.dart';
+
 class TopInfoTile extends StatelessWidget {
   final String title;
   final String value;
@@ -27,15 +29,14 @@ class TopInfoTile extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: valueColor),
           const SizedBox(width: 10),
-          Expanded(
-            child: Text(title, style: const TextStyle(fontSize: 12)),
-          ),
+          Expanded(child: Text(title, style: const TextStyle(fontSize: 12))),
           Text(
             value,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
               color: valueColor,
+              fontFamily: AppFonts.opensansRegular,
             ),
           ),
         ],

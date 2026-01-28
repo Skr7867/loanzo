@@ -50,7 +50,9 @@ class CibilScoreOverview extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.blackColor : AppColors.whiteColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 2),
+        ],
       ),
       child: Column(
         children: [
@@ -196,9 +198,27 @@ class CibilScoreOverview extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
-              Text('300', style: TextStyle(fontSize: 10)),
-              Text('600', style: TextStyle(fontSize: 10)),
-              Text('900', style: TextStyle(fontSize: 10)),
+              Text(
+                '300',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
+              ),
+              Text(
+                '600',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
+              ),
+              Text(
+                '900',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontFamily: AppFonts.opensansRegular,
+                ),
+              ),
             ],
           ),
 

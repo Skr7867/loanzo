@@ -758,7 +758,7 @@ class CamReportScreen extends StatelessWidget {
             color: isDark ? AppColors.blackColor : Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+              BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 2),
             ],
           ),
           child: Column(
@@ -918,7 +918,7 @@ class CamReportScreen extends StatelessWidget {
       color: isDark ? AppColors.blackColor : Colors.white,
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
-        BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12),
+        BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 2),
       ],
     );
   }

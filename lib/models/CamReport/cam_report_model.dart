@@ -227,7 +227,7 @@ class CamReport {
       data['applicant'] = applicant!.toJson();
     }
     if (incomeDetails != null) {
-      data['incomeDetails'] = incomeDetails!.toJson();
+      data['incomeDetails'] = incomeDetails!;
     }
     if (existingObligations != null) {
       data['existingObligations'] = existingObligations!.toJson();
@@ -389,30 +389,12 @@ class IncomeDetails {
   int? monthlyDisposableIncome;
   int? disposableIncomePercentage;
 
-  IncomeDetails({
-    this.monthlyIncome,
-    this.employmentType,
-    this.stabilityScore,
-    this.monthlyDisposableIncome,
-    this.disposableIncomePercentage,
-  });
-
   IncomeDetails.fromJson(Map<String, dynamic> json) {
-    monthlyIncome = json['monthlyIncome'];
+    monthlyIncome = parseInt(json['monthlyIncome']);
     employmentType = json['employmentType'];
     stabilityScore = json['stabilityScore'];
-    monthlyDisposableIncome = json['monthlyDisposableIncome'];
-    disposableIncomePercentage = json['disposableIncomePercentage'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['monthlyIncome'] = monthlyIncome;
-    data['employmentType'] = employmentType;
-    data['stabilityScore'] = stabilityScore;
-    data['monthlyDisposableIncome'] = monthlyDisposableIncome;
-    data['disposableIncomePercentage'] = disposableIncomePercentage;
-    return data;
+    monthlyDisposableIncome = parseInt(json['monthlyDisposableIncome']);
+    disposableIncomePercentage = parseInt(json['disposableIncomePercentage']);
   }
 }
 
@@ -1561,4 +1543,12 @@ class NextSteps {
     data['timeline'] = timeline;
     return data;
   }
+}
+
+int? parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value);
+  if (value is double) return value.toInt();
+  return null;
 }

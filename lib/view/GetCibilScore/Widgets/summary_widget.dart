@@ -21,7 +21,9 @@ class SummaryWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.blackColor : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 4),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,12 +37,20 @@ class SummaryWidget extends StatelessWidget {
                 children: const [
                   Text(
                     'Summary',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: AppFonts.opensansRegular,
+                    ),
                   ),
                   SizedBox(height: 2),
                   Text(
                     'Get your all summary',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey,
+                      fontFamily: AppFonts.opensansRegular,
+                    ),
                   ),
                 ],
               ),

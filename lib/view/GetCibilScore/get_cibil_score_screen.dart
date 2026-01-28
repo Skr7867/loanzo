@@ -132,7 +132,11 @@ class GetCivilScoreScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(color: Colors.white70, fontSize: 10),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 10,
+              fontFamily: AppFonts.opensansRegular,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -142,6 +146,7 @@ class GetCivilScoreScreen extends StatelessWidget {
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w600,
+              fontFamily: AppFonts.opensansRegular,
               fontSize: 12,
             ),
           ),
